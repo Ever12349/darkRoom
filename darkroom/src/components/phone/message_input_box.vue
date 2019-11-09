@@ -33,7 +33,11 @@ export default {
   },
   methods: {
     send() {
-      this.$emit("send_message", this.input_message);
+      if(this.input_message){
+        this.$emit("sendMessage", this.input_message);
+      }else{
+        window.console.log('空')
+      }
     },
     hidden() {
       this.$emit("hidden");

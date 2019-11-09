@@ -1,3 +1,5 @@
+const dotenv = require('dotenv').config();
+
 const Koa = require('koa')
 const app = new Koa()
 const views = require('koa-views')
@@ -11,7 +13,12 @@ const users = require('./routes/users')
 
 
 const cors = require('koa2-cors')
-const dotenv = require('dotenv').config();
+
+// import mongodb from '../../config/mongodb.js'
+
+// import './config/mongodb.js'
+// import './orm/mongodb/user_name.js'
+// const dotenv = require('dotenv').config();
 
 
 // error handler

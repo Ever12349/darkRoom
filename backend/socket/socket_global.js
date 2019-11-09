@@ -14,6 +14,8 @@ function setSocketIoGlobal(){
 
 setSocketIoGlobal()
 
+
+
 export function get_id(){
     try{
         console.log(socket_io.sockets.sockets,'sssssssssssssss')
