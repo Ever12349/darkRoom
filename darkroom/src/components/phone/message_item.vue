@@ -5,8 +5,8 @@
                 <div>
                     {{ user_name }}
                 </div>
-                <i class="cubeic-arrow"></i>
-                <div>
+                <i v-show='to_user_code' class="cubeic-arrow"></i>
+                <div v-show='to_user_code'>
                     {{ to_user_name }}
                 </div>
                 <div class='placeholder'></div>
@@ -41,26 +41,52 @@
 </template>
 
 <script>
+import moment from 'moment';
+moment.locale('zh-cn');
 export default {
   name: "message_item",
   components: {
     responseItem: () => import("@/components/phone/response_item.vue")
   },
+  props:{
+    messageData:{
+      type:Object
+    }
+  },
   data() {
     return {
-      message_id: "",
+      message_id: '',
       to_message_id:'',
       response_list: [1],
+      user_code:null,
+      to_user_code:null,
       show_more_flag: true,
-      user_name: "真实之泪",
-      to_user_name: "谎言",
-      content: "我是谁？",
-      time: "2019-10-5 08:30"
+      user_name: "",
+      to_user_name: "",
+      content: "",
+      time: ""
     };
   },
+  created(){
+    this.render(this.messageData)
+  },
   methods: {
+    render(renderData){
+      this.message_id = renderData.order_id;
+      this.to_message_id = renderData.to_order_id;
+      this.user_code = renderData.user_code;
+      this.to_user_code = renderData.to_user_code;
+      const user_info_obj = this.$store.state.user_info_state
+      this.user_name = user_info_obj[this.user_code]?user_info_obj[this.user_code].user_name:null;
+      // window.console.log(this.$store.state.user_info_state,'this.$store.state')
+      this.to_user_name = user_info_obj[this.to_user_code]?user_info_obj[this.to_user_code].user_name:null;
+      this.content = renderData.content;
+      this.time = moment(renderData.create_time).fromNow();
+
+    },
     showMore() {
-      this.show_more_flag = false;
+      window.console.log(this.messageData,'messageData')
+      // this.show_more_flag = false;
       this.$nextTick(() => {
         // this.response_list.splice(0,0,1,1,1,1,1);
       });

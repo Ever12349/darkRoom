@@ -65,7 +65,7 @@ export function redisLpush(key, value_list) {
             const list = value_list.map((item, idnex) => {
                 return JSON.stringify(item)
             })
-            redisClient.lpush(key, ...list, (err) => {
+            redisClient.lpush(key, list.reverse(), (err) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -86,9 +86,9 @@ export function redislrangeAll(key) {
             // let list_value = await redisClient.LRANGE(key, 0, 1);
             // let list_value = [];
 
-            redisClient.llen(key, function (err, length) {
+            // redisClient.llen(key, function (err, length) {
                 // console.log(,'yyyyyydasdasdasd')
-                redisClient.LRANGE(key, 0, length, (err, list_value) => {
+                redisClient.LRANGE(key, 0, -1, (err, list_value) => {
                     // console.log(redis_length, list_value, 'list_valuelist_value')
                     if (list_value) {
                         list_value = list_value.map((item, index) => {
@@ -101,7 +101,7 @@ export function redislrangeAll(key) {
                     resolve(list_value)
 
                 })
-            })
+            // })
 
 
 

@@ -10,6 +10,10 @@ const redisClient = require('../config/redis_database.js')
 // }
 
 import {
+    isArray, isBoolean, isDate, isFunction, isNull, isNumber, isString, isUndefined
+} from './dataType.js'
+
+import {
     redisHashGet,
     redisGet,
     redisSet,
@@ -32,14 +36,14 @@ import PublicMessageModel from '../orm/mongodb/public_message_model.js'
 export async function getRandonUserName() {//随机获取一个不重复user_name
     const maxCount = await UserInfoModel.countDocuments();
     const user_name_data = await UserNameModel.findOne({ id: maxCount })
-    console.log(user_name_data, maxCount, 'user_name_data')
+    // console.log(user_name_data, maxCount, 'user_name_data')
     return user_name_data.user_name
 }
 
 export async function getUserCode() {//获取一个用户编号
     const maxCount = await UserInfoModel.countDocuments();
     const user_code_data = await UserCodeModel.findOne({ id: maxCount })
-    console.log(user_code_data, maxCount, 'user_code_data')
+    // console.log(user_code_data, maxCount, 'user_code_data')
     return user_code_data.user_code
 }
 
@@ -117,11 +121,11 @@ export function savePublicMessageList(new_message_list) {//保存公共存储
     return new Promise(async (resolve, reject) => {
         const list_len = await redisllen(public_message_list_key)
         if (!!list_len) {//表示列表存在
-            let temp_list = new_message_list.map((item, index) => {
-                return JSON.stringify(item)
-            })
+            // let temp_list = new_message_list.map((item, index) => {
+            //     return JSON.stringify(item)
+            // })
 
-            await redisLpush(public_message_list_key, temp_list);
+            await redisLpush(public_message_list_key, new_message_list);
             redisExpire(public_message_list_key, 600)
         } else {
             let message_list = await PublicMessageModel.find({
@@ -144,11 +148,11 @@ export function getPublicMessageList() {
         const key = `public_message_list`;
         const redis_public_message_list = await redislrangeAll(key);
         if (!!redis_public_message_list.length) {
-            const temp_list = redis_public_message_list.map((item, index) => {
-                return JSON.parse(item)
-            })
-            resolve(temp_list)
-            console.log('resolve之后继续运行')
+            // const temp_list = redis_public_message_list.map((item, index) => {
+            //     return JSON.parse(item)
+            // })
+            resolve(redis_public_message_list)
+            // console.log('resolve之后继续运行')
         } else {
             let message_list = await PublicMessageModel.find({
                 data_status: 1
@@ -156,14 +160,14 @@ export function getPublicMessageList() {
                 create_time: -1
             }).limit(1000)
             resolve(message_list)
-            let temp_list = message_list.map((item, index) => {
-                return JSON.stringify(item)
-            })
-            redisLpush(key, ...temp_list)
+            // let temp_list = message_list.map((item, index) => {
+            //     return JSON.stringify(item)
+            // })
+            redisLpush(key, message_list)
             redisExpire(key, 600)
 
 
-            console.log('resolve之后继续运行')
+            // console.log('resolve之后继续运行')
         }
     })
 }
@@ -171,7 +175,7 @@ export function getPublicMessageList() {
 export function savePublicMessageListByUserCode(user_code, message_list) {
     const redis_key = `public_message_list!${user_code}!public_message_list`;
     redisDelKey(redis_key).then(res => {
-        console.log(message_list, res, 'message_listmessage_list')
+        // console.log(message_list, res, 'message_listmessage_list')
         redisLpush(redis_key, message_list)
         if (res === 'sucess') {
             // redisLpush(redis_key,message_list)
@@ -184,9 +188,52 @@ export function getPublicMessageListByUserCode(user_code) {
     return new Promise((resolve, reject) => {
         const redis_key = `public_message_list!${user_code}!public_message_list`;
         redislrangeAll(redis_key).then((res) => {
-            console.log(res, 'getPublicMessageListByUserCodegetPublicMessageListByUserCode')
+            // console.log(res, 'getPublicMessageListByUserCodegetPublicMessageListByUserCode')
             resolve(res)
         })
+    })
+}
+
+
+export function getUserInfo(value) {
+    return new Promise(async (resolve, reject) => {
+        let user_info_obj = {}
+        if (isArray(value)) {
+            let promises = value.map((user_code) => {
+                return new Promise(async (resolve_1, reject_1) => {
+                    const redis_key = `user_info!${user_code}!user_info`;
+                    let user_info = await redisGet(redis_key);
+                    if (user_info) {
+                        user_info_obj[user_code] = JSON.parse(user_info)
+                    } else {
+                        user_info = await UserInfoModel.findOne({
+                            user_code,
+                        })
+                        user_info_obj[user_code] = user_info;
+                        redisSetEx(redis_key, JSON.stringify(user_info), 600);
+                    }
+                    resolve_1('sucess')
+                })
+            })
+            await Promise.all(promises)
+        } else if (isString(value)) {
+            const redis_key = `user_info!${user_code}!user_info`;
+            let user_info = await redisGet(redis_key);
+            if (user_info) {
+                user_info_obj[user_code] = JSON.parse(user_info)
+            } else {
+                user_info = await UserInfoModel.findOne({
+                    user_code: vaue,
+                })
+                user_info_obj[user_code] = user_info;
+                redisSetEx(redis_key, JSON.stringify(user_info), 600);
+            }
+
+        } else {
+            reject('参数错误')
+        }
+
+        resolve(user_info_obj)
     })
 }
 

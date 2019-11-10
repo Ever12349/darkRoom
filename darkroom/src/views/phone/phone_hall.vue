@@ -2,8 +2,8 @@
   <div class='bg'>
     <mt-header :title='tittle_message'></mt-header>
     <div class="scroll-list-wrap">
-      <cube-scroll ref="scroll" :options="options">
-        <message-item :key='index' v-for='(item,index) in message_list'></message-item>
+      <cube-scroll ref="scroll" :options="options" @pulling-down='pullingDown' @pulling-up='pullingUp'>
+        <message-item :key='index' :messageData='item' v-for='(item,index) in message_list'></message-item>
       </cube-scroll>
     </div>
     <mt-button size="small" @click='showInput' class='transmit_message' type="primary">发送信息</mt-button>
@@ -17,10 +17,24 @@ export default {
   data() {
     return {
       response_order_id: null, //回复别人是的id
-      message_list: [1, 1, 1, 1, 1],
+      message_list: [],
       show_input_box_flag: false,
-      tittle_message: "大厅(在线人数:1)",
-      options: Object.freeze({}),
+      tittle_message: `大厅(在线人数:100)`,
+      options: Object.freeze({
+        bounce: {
+          bottom: true
+        },
+        pullUpLoad: {
+          threshold: 0
+          // txt:{ more: '加载中', noMore: '没有数据了' }
+        },
+
+        pullDownRefresh: {
+          threshold: 60,
+          stop: 40,
+          txt: "更新成功"
+        }
+      }),
 
       pageSize: 10,
       pageNo: 1
@@ -34,10 +48,28 @@ export default {
     this.getMessageList();
   },
   methods: {
-    getMessageList() {
+    pullingDown() {
+      window.console.log("pullingDown");
+      this.pageNo = 1;
+      this.getMessageList(() => {
+        this.$refs.scroll.forceUpdate({
+          dirty: true
+        });
+      });
+    },
+    pullingUp() {
+      this.pageNo++;
+      this.getMessageList(() => {
+        this.$refs.scroll.forceUpdate({
+          dirty: true
+        });
+      });
+    },
+    getMessageList(callback) {
       const user_code = localStorage.user_code,
         pageSize = this.pageSize,
         pageNo = this.pageNo;
+      window.console.log(pageNo,'pageNo')
       if (user_code) {
         this.$myapi
           .getPublicMessageList({
@@ -47,9 +79,21 @@ export default {
           })
           .then(res => {
             window.console.log(res.data, "getMessageList");
+            if (this.pageNo == 1) {
+              this.message_list = [];
+            }
+            this.$nextTick(() => {
+              this.message_list = this.message_list.concat(
+                res.data.data.message_list
+              );
+              this.$nextTick(() => {
+                this.$store.commit('addNewUserInfo',res.data.data.user_info)
+                callback && callback();
+              });
+            });
           });
-      }else{
-        setTimeout(this.getMessageList,200)
+      } else {
+        setTimeout(this.getMessageList, 200);
       }
     },
     showInput() {
