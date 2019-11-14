@@ -3,7 +3,7 @@
     <mt-header :title='tittle_message'></mt-header>
     <div class="scroll-list-wrap">
       <cube-scroll ref="scroll" :options="options" @pulling-down='pullingDown' @pulling-up='pullingUp'>
-        <message-item :key='index' :messageData='item' v-for='(item,index) in message_list'></message-item>
+        <message-item @response='response' :key='index' :messageData='item' v-for='(item,index) in message_list'></message-item>
       </cube-scroll>
     </div>
     <mt-button size="small" @click='showInput' class='transmit_message' type="primary">发送信息</mt-button>
@@ -25,8 +25,8 @@ export default {
           bottom: true
         },
         pullUpLoad: {
-          threshold: 0
-          // txt:{ more: '加载中', noMore: '没有数据了' }
+          threshold: 0,
+          txt: { more: "加载中", noMore: "没有数据了" }
         },
 
         pullDownRefresh: {
@@ -51,25 +51,21 @@ export default {
     pullingDown() {
       window.console.log("pullingDown");
       this.pageNo = 1;
-      this.getMessageList(() => {
-        this.$refs.scroll.forceUpdate({
-          dirty: true
-        });
-      });
+      this.getMessageList();
     },
     pullingUp() {
       this.pageNo++;
-      this.getMessageList(() => {
-        this.$refs.scroll.forceUpdate({
-          dirty: true
-        });
-      });
+      this.getMessageList();
     },
-    getMessageList(callback) {
+    response(order_id){
+      this.response_order_id = order_id;
+      this.show_input_box_flag = true;
+    },
+    getMessageList() {
       const user_code = localStorage.user_code,
         pageSize = this.pageSize,
         pageNo = this.pageNo;
-      window.console.log(pageNo,'pageNo')
+      // window.console.log(pageNo, "pageNo");
       if (user_code) {
         this.$myapi
           .getPublicMessageList({
@@ -78,19 +74,29 @@ export default {
             pageNo
           })
           .then(res => {
-            window.console.log(res.data, "getMessageList");
-            if (this.pageNo == 1) {
-              this.message_list = [];
-            }
-            this.$nextTick(() => {
-              this.message_list = this.message_list.concat(
-                res.data.data.message_list
-              );
+            // window.console.log(res.data, "getMessageList");
+            if (res.data.code == 200) {
+              this.$store.commit("addNewUserInfo", res.data.data.user_info);
+              if (this.pageNo == 1) {
+                this.message_list = [];
+              }
               this.$nextTick(() => {
-                this.$store.commit('addNewUserInfo',res.data.data.user_info)
-                callback && callback();
+                this.message_list = this.message_list.concat(
+                  res.data.data.message_list
+                );
+                this.$nextTick(() => {
+                  if (res.data.data.message_list.length > 0) {
+                    this.$refs.scroll.forceUpdate({
+                      dirty: true
+                    });
+                  } else {
+                    this.$refs.scroll.forceUpdate();
+                  }
+                });
               });
-            });
+            } else {
+              this.$refs.scroll.forceUpdate();
+            }
           });
       } else {
         setTimeout(this.getMessageList, 200);
@@ -112,7 +118,7 @@ export default {
         })
         .then(res => {
           window.console.log(res.data);
-          // this.hiddenInput();
+          this.hiddenInput();
         });
     }
   }

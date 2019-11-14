@@ -4,7 +4,9 @@ import {
     Tabbar, 
     TabItem,
     Button,
-    Field
+    Field,
+    Spinner,
+    Search
   } from 'mint-ui'
   import 'mint-ui/lib/style.css'
 
@@ -13,7 +15,9 @@ import {
     Tabbar, 
     TabItem,
     Button,
-    Field
+    Field,
+    Spinner,
+    Search
   ]
   
   compoment_list.forEach((item)=>{

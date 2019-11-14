@@ -4,6 +4,7 @@ const Koa = require('koa')
 const app = new Koa()
 const views = require('koa-views')
 const json = require('koa-json')
+const jwt = require('koa-jwt')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
@@ -40,6 +41,14 @@ app.use(views(__dirname + '/views', {
 
 app.use(cors({origin:process.env.HOST ,credentials:false,allowMethods: ['ALL']}));
 
+
+app.use(jwt({
+  secret:process.env.JWTKEY
+}).unless({
+  path:[/\/keep_user_online/]
+}))
+
+
 // logger
 app.use(async (ctx, next) => {
   const start = new Date()
@@ -53,6 +62,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 
 // error-handling
+
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });

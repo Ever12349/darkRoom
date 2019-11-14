@@ -12,6 +12,7 @@
                 <img slot="icon" src="@/assets/底部导航/我的.gif"> 我的
             </mt-tab-item>
         </mt-tabbar>
+        
     </div>
 </template>
 

@@ -1,6 +1,9 @@
 
 const redisClient = require('../config/redis_database.js')
 
+import {
+    isArray, isBoolean, isDate, isFunction, isNull, isNumber, isString, isUndefined
+} from '../util/dataType'
 
 
 export function redisHashGet(hashkey, key) {
@@ -60,8 +63,9 @@ export function redisIncr(key) {//某个项目的值+1
 }
 
 export function redisLpush(key, value_list) {
+    console.log(key, value_list, 'redisLpush')
     return new Promise((resolve, reject) => {
-        if (value_list) {
+        if (isArray(value_list) && (!!value_list.length)) {
             const list = value_list.map((item, idnex) => {
                 return JSON.stringify(item)
             })
@@ -72,7 +76,8 @@ export function redisLpush(key, value_list) {
                     resolve('sucess')
                 }
             })
-
+        } else {
+            resolve('sucess')
         }
 
     })
@@ -87,20 +92,20 @@ export function redislrangeAll(key) {
             // let list_value = [];
 
             // redisClient.llen(key, function (err, length) {
-                // console.log(,'yyyyyydasdasdasd')
-                redisClient.LRANGE(key, 0, -1, (err, list_value) => {
-                    // console.log(redis_length, list_value, 'list_valuelist_value')
-                    if (list_value) {
-                        list_value = list_value.map((item, index) => {
-                            return JSON.parse(item)
-                        })
+            // console.log(,'yyyyyydasdasdasd')
+            redisClient.LRANGE(key, 0, -1, (err, list_value) => {
+                // console.log(redis_length, list_value, 'list_valuelist_value')
+                if (list_value) {
+                    list_value = list_value.map((item, index) => {
+                        return JSON.parse(item)
+                    })
 
-                    } else {
-                        list_value = [];
-                    }
-                    resolve(list_value)
+                } else {
+                    list_value = [];
+                }
+                resolve(list_value)
 
-                })
+            })
             // })
 
 
@@ -113,14 +118,14 @@ export function redislrangeAll(key) {
 
 export function redisllen(key) {//获取列表的长度
     return new Promise(async (resolve, reject) => {
-        redisClient.llen(key,(err,len)=>{
-            if(err){
+        redisClient.llen(key, (err, len) => {
+            if (err) {
                 reject(err)
-            }else{
+            } else {
                 resolve(len)
             }
         });
-        
+
     })
 }
 
@@ -138,6 +143,23 @@ export function redisDelKey(key) {
                 resolve('success')
             }
         })
+    })
+}
+
+export function redisHkeys(key){
+    return new Promise((resolve,reject)=>{
+        if(isString(key)){
+            redisClient.hkeys(key,(err,res)=>{
+                if(err){
+                    reject('查询错误')
+                }else{
+                    resolve(res)
+                }
+            })
+        }else{
+            reject('参数错误')
+        }
+        
     })
 }
 
