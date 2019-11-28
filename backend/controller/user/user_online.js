@@ -13,6 +13,7 @@ import {
     getjwtToken,
     verifyJwtToken,
     checkUserName,
+    getUserInfo
 } from '../../util'
 
 import moment from 'moment';
@@ -44,7 +45,10 @@ export async function keep_user_online(ctx, next) {
                 verifyData = verifyJwtToken(jwt_token)
                 // console.log(verifyData, 'verifyData')
                 new_user_code = verifyData.user_code;
-                new_user_name = verifyData.user_name;
+                // new_user_name = verifyData.user_name;
+                let user_info = await getUserInfo(new_user_code);
+                // console.log(user_info,'uuuuuuuu')
+                new_user_name = user_info[new_user_code].user_name;
             } catch (e) {
                 console.log(e)
                 throw new Error('token非法')

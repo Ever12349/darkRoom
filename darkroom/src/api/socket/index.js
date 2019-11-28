@@ -1,6 +1,7 @@
 import io from 'socket.io-client'
 
-const url = 'http://localhost:3000'
+// const url = 'http://localhost:3000'
+const url = 'http://192.168.43.68:3000'
 
 const socket = io(url)
 
@@ -17,11 +18,12 @@ socket.on('connect', function(){
         socket_id:socket.id,
         token:localStorage.token||null,
     }).then(res=>{
-        window.console.log(res.data)
+        window.console.log(res.data,'soooooooooo')
         const resData = res.data;
         if(resData.code == 200){
             localStorage.user_code = resData.user_code;
             localStorage.user_status = resData.user_status;
+            localStorage.user_name = resData.user_name;
             if(resData.user_status == 0){//表示用户第一次打开应用
                 const token = resData.token;
                 localStorage.token = token;
@@ -33,7 +35,7 @@ socket.on('connect', function(){
     })
 });
 
-window.console.log(socket,socket.id)
+window.console.log(socket,socket.id,url)
 // export default socket
 
 export default socket

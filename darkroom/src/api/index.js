@@ -6,11 +6,19 @@ if (localStorage.token) {
 
 import socket, { } from "./socket";
 
-const baseUrl = 'http://localhost:3000'
+// const baseUrl = 'http://localhost:3000'
+const baseUrl = 'http://192.168.43.68:3000'
+
 
 const api = {
-    visitorSendMessage: function (message) {
-        axios.post(message)
+    // visitorSendMessage: function (message) {
+    //     axios.post(message)
+    // },
+
+    checkUserNameLegality: function (user_name) {
+        return axios.post(`${baseUrl}/users/check_user_name_legality`, {
+            user_name,
+        })
     },
 
     sendPublicMessage: function (message) {
@@ -37,10 +45,10 @@ const api = {
         })
     },
 
-    friendsApplication(data){
-        return axios.post(`${baseUrl}/api/friends_application`,{
-            user_code:data.user_code,
-            to_user_code:data.to_user_code
+    friendsApplication(data) {
+        return axios.post(`${baseUrl}/api/friends_application`, {
+            user_code: data.user_code,
+            to_user_code: data.to_user_code
         })
     }
 }
