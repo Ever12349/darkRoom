@@ -1,5 +1,5 @@
 
-let socket_io
+let socket_io,io
 
 function setSocketIoGlobal(){
     if(global.socket_server){
@@ -8,13 +8,13 @@ function setSocketIoGlobal(){
     }else{
         setTimeout(() => {
             setSocketIoGlobal()
-        }, 1000);
+        }, 50);
     }
 }
 
 setSocketIoGlobal()
 
-
+export default io = socket_io;
 
 export function get_id(){
     try{

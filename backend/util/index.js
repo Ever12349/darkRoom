@@ -124,7 +124,7 @@ export function savePublicMessageList(new_message_list) {//保存公共存储
             }).sort({
                 create_time: -1
             }).limit(1000)
-            await redisDelKey(public_message_list_key, )
+            await redisDelKey(public_message_list_key)
             await redisLpush(public_message_list_key, message_list);
             redisExpire(public_message_list_key, 600)
 
@@ -196,13 +196,14 @@ export function getUserInfo(value) {
             })
             await Promise.all(promises)
         } else if (isString(value)) {
+            const user_code = value;
             const redis_key = `user_info!${user_code}!user_info`;
             let user_info = await redisGet(redis_key);
             if (user_info) {
                 user_info_obj[user_code] = JSON.parse(user_info)
             } else {
                 user_info = await UserInfoModel.findOne({
-                    user_code: vaue,
+                    user_code: value,
                 })
                 user_info_obj[user_code] = user_info;
                 redisSetEx(redis_key, JSON.stringify(user_info), 600);
@@ -296,10 +297,11 @@ export function setNewPublicResponseMessageNum(order_id) {
 
 
 export function checkUserName(user_name) {
-    return new Promise(async (resplve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (isString(user_name)) {
             UserInfoModel.findOne({
-                user_name: user_name
+                user_name: user_name,
+                user_status: 1,
             }).then(res => {
                 if (!res) {
                     resolve(true)
