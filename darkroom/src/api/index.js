@@ -7,7 +7,7 @@ if (localStorage.token) {
 import socket, { } from "./socket";
 
 // const baseUrl = 'http://localhost:3000'
-const baseUrl = 'http://192.168.43.238:3000'
+const baseUrl = 'http://192.168.43.68:3000'
 
 
 const api = {
