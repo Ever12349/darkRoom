@@ -316,3 +316,14 @@ export function checkUserName(user_name) {
     })
 }
 
+export function currentCipherKey(){//当前加解密码的密钥
+    return new Promise((resolve,reject)=>{
+        
+    })
+}
+
+export function passwordCipher(password){//密码加密
+
+}
+
+

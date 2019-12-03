@@ -28,17 +28,21 @@
         :state="second_password_state"
         v-model="sign_in_second_password"
       ></mt-field>
-      <mt-field label="验证码" :state="captcha_state" v-model="captcha">
+      <mt-field label="验证码" placeholder="请输入验证码" :state="captcha_state" v-model="captcha">
         <verify @pushVeriftyCode="setVeriftyCode"></verify>
       </mt-field>
       <div class="placeholder"></div>
-      <mt-button size="large" type="primary">注册</mt-button>
+      <mt-button size="large" @click="register" type="primary">注册</mt-button>
     </div>
   </div>
 </template>
 
 <script>
 const state_word = ["error", "success", "warning", null];
+const xss = require("xss");
+import {
+  Encrypt
+} from '@/api/secret.js'
 export default {
   name: "sign_in_item",
   components: {
@@ -56,10 +60,6 @@ export default {
       sign_in_user_name_state: null,
       sign_in_password: "",
       sign_in_second_password: "",
-      login_user_code: "",
-      user_name: localStorage.user_name,
-      is_login: !!localStorage.user_status,
-      show_login_in_div_flag: false,
       show_sign_in_div_flag: false,
       current_verifty_code: null
     };
@@ -69,6 +69,10 @@ export default {
       if (password) {
         this.password_state =
           state_word[Number(password.length >= 6 && password.length <= 32)];
+
+        this.second_password_state &&
+          (this.second_password_state =
+            state_word[Number(password === this.sign_in_second_password)]);
       } else {
         this.password_state = state_word[0];
       }
@@ -99,6 +103,58 @@ export default {
     }
   },
   methods: {
+    register() {
+      //表单验证
+      // window.$phoneApp.showToast('非法')
+      if (this.sign_in_user_name) {
+        //检查用户名
+        if (this.sign_in_user_name_state === state_word[0]) {
+          window.$phoneApp.showToast("用户名已经被别人注册了哦！！！");
+          return;
+        }
+      } else {
+        window.$phoneApp.showToast("用户名不能为空");
+        return;
+      }
+      if (this.sign_in_password) {
+        //检查密码
+        if (this.password_state !== state_word[1]) {
+          // window.$phoneApp.showToast('密码长度')
+          const p_length = this.sign_in_password.length;
+          if (p_length < 6) {
+            window.$phoneApp.showToast("密码长度不能小于6！！");
+          } else if (p_length > 32) {
+            window.$phoneApp.showToast("密码长度不能大于32！！");
+          }
+          return;
+        }
+      } else {
+        window.$phoneApp.showToast("密码不能为空");
+        return;
+      }
+
+      if (this.sign_in_second_password !== this.sign_in_password) {
+        window.$phoneApp.showToast("两次密码不一致！！！");
+        return;
+      }
+
+      if (this.captcha) {
+        if (this.captcha_state !== state_word[1]) {
+          window.$phoneApp.showToast("验证码错误！！！");
+          return;
+        }
+      } else {
+        window.$phoneApp.showToast("请输入验证码");
+        return;
+      }
+
+      this.$myapi.userRegister({
+        user_code: xss(this.sign_in_user_code_placeholder),
+        user_name: xss(this.sign_in_user_name),
+        password: Encrypt(this.sign_in_password),
+        second_password: Encrypt(this.sign_in_password)
+      });
+    },
     setVeriftyCode(verify_code) {
       this.current_verifty_code = verify_code;
     },
@@ -113,6 +169,10 @@ export default {
           }
         });
       });
+    },
+    hiddenSigninDiv(event, data) {
+      window.console.log(event);
+      this.$emit("hiddenSigninDiv", data || null);
     }
   }
 };
@@ -140,5 +200,8 @@ export default {
   padding-top: 5vw;
   display: flex;
   flex-direction: column;
+}
+.placeholder {
+  flex: 1;
 }
 </style>

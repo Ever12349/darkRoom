@@ -67,4 +67,6 @@ app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
+import './schedule/schedule_task.js'
+
 module.exports = app

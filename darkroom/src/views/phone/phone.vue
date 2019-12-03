@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { Toast } from "mint-ui";
 const option_path = {
   tab1: "/phone_hall",
   tab2: "/friends",
@@ -40,9 +41,12 @@ export default {
       // })
     };
   },
+  created() {
+    window.$phoneApp = this;
+  },
   mounted() {
     const route = this.$route.path;
-    window.console.log(route,'route',selected_path[route],this.selected)
+    window.console.log(route, "route", selected_path[route], this.selected);
     this.selected = selected_path[route];
   },
   watch: {
@@ -54,6 +58,15 @@ export default {
     // $route(route) {
     //   // window.console.log(route.meta.keepAlive);
     // }
+  },
+  methods: {
+    showToast(message, time) {
+      Toast({
+        message: message,
+        // position: "bottom",
+        duration: time||1500
+      });
+    }
   }
 };
 </script>

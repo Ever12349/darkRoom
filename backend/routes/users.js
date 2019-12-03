@@ -13,10 +13,11 @@ router.prefix('/users')
 
 
 import {keep_user_online} from '../controller/user/user_online.js'
-import {checkUserNameLegality} from '../controller/user/user.js'
+import {checkUserNameLegality,register} from '../controller/user/user.js'
 
 
 router.post('/keep_user_online',keep_user_online)
 router.post('/check_user_name_legality',tokenFilter,checkUserNameLegality)
+router.post('/register',tokenFilter,register)
 
 module.exports = router

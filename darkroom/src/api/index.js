@@ -6,16 +6,34 @@ if (localStorage.token) {
 
 import socket, { } from "./socket";
 
+
+import public_key from '@/pem/secret_key.js'
+
+// const public_key = require('@/pem/secret_key.js')
+
+window.console.log(public_key,'public_key')
+
+
 // const baseUrl = 'http://localhost:3000'
-const baseUrl = 'http://192.168.43.68:3000'
+// const baseUrl = 'http://192.168.43.68:3000'
 
-
+const baseUrl = `${process.env.VUE_APP_BASEURL}`
+window.console.log(baseUrl,'baseUrl')
 const api = {
     // visitorSendMessage: function (message) {
     //     axios.post(message)
     // },
 
-    checkUserNameLegality: function (user_name) {
+    userRegister: function (data) {//用户注册
+        return axios.post(`${baseUrl}/users/register`, {
+            user_name: data.user_name,
+            user_code: data.user_code,
+            password: data.password,
+            second_password: data.second_password
+        })
+    },
+
+    checkUserNameLegality: function (user_name) {//检查用户名是否合法
         return axios.post(`${baseUrl}/users/check_user_name_legality`, {
             user_name,
         })

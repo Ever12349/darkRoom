@@ -48,3 +48,12 @@ export async function registerFilter(ctx,next){//是否注册的判断
         }
     }
 }
+
+export async function getCipherKey(ctx,next){
+    try{
+
+    }catch(e){
+
+
+    }
+}
