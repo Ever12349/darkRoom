@@ -1,14 +1,9 @@
 import io from 'socket.io-client'
 
 // const url = 'http://localhost:3000'
-<<<<<<< HEAD
 // const url = 'http://192.168.43.68:3000'
 const url = `${process.env.VUE_APP_BASEURL}`
 window.console.log(url, 'socket___URL')
-=======
-const url = 'http://192.168.43.238:3000'
-
->>>>>>> 07d3afead4ef28969b862c9b214be87d8deffde1
 const socket = io(url)
 
 import { keep_user_online } from '@/api'
