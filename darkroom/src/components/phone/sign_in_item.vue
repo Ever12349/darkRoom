@@ -40,9 +40,8 @@
 <script>
 const state_word = ["error", "success", "warning", null];
 const xss = require("xss");
-import {
-  Encrypt
-} from '@/api/secret.js'
+import { Encrypt } from "@/api/secret.js";
+import { setAjaxToken } from "@/api";
 export default {
   name: "sign_in_item",
   components: {
@@ -94,7 +93,7 @@ export default {
     sign_in_user_name(user_name) {
       window.console.log(user_name);
       if (user_name) {
-        this.checkUserName(user_name).then(is_legal => {
+        this.checkUserName(user_name, localStorage.user_code).then(is_legal => {
           this.sign_in_user_name_state = state_word[Number(is_legal)];
         });
       } else {
@@ -148,19 +147,37 @@ export default {
         return;
       }
 
-      this.$myapi.userRegister({
-        user_code: xss(this.sign_in_user_code_placeholder),
-        user_name: xss(this.sign_in_user_name),
-        password: Encrypt(this.sign_in_password),
-        second_password: Encrypt(this.sign_in_password)
-      });
+      this.$myapi
+        .userRegister({
+          user_code: xss(this.sign_in_user_code_placeholder),
+          user_name: xss(this.sign_in_user_name),
+          password: Encrypt(this.sign_in_password),
+          second_password: Encrypt(this.sign_in_password)
+        })
+        .then(res => {
+          window.console.log(res.data);
+          if (res.data.code === 200) {
+            window.$phoneApp.showToast("注册成功！！！");
+            const new_user_info = res.data.user_info,
+              token = res.data.token;
+            localStorage.token = token;
+            setAjaxToken(token);
+
+            localStorage.user_name = new_user_info.user_name;
+            localStorage.user_code = new_user_info.user_code;
+            localStorage.user_status = new_user_info.user_status;
+
+            this.sign_in_success();
+            this.hiddenSigninDiv();
+          }
+        });
     },
     setVeriftyCode(verify_code) {
       this.current_verifty_code = verify_code;
     },
-    checkUserName(user_name) {
+    checkUserName(user_name, user_code) {
       return new Promise(async (resolve, reject) => {
-        this.$myapi.checkUserNameLegality(user_name).then(res => {
+        this.$myapi.checkUserNameLegality(user_name, user_code).then(res => {
           window.console.log(res.data);
           if (res.data.code == 200) {
             resolve(res.data.is_legal);
@@ -173,6 +190,9 @@ export default {
     hiddenSigninDiv(event, data) {
       window.console.log(event);
       this.$emit("hiddenSigninDiv", data || null);
+    },
+    sign_in_success() {
+      this.$emit("signinSucess");
     }
   }
 };

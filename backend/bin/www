@@ -104,3 +104,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+require('../schedule/schedule_task.js')

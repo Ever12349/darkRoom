@@ -2,3 +2,4 @@ darkroom/密钥对1(2048bits pkcs#8)/public.pem
 darkroom/密钥对1(2048bits pkcs#8)/private.pem
 backend/密钥对2(2048bits pkcs#8)/public.pem
 backend/密钥对2(2048bits pkcs#8)/private.pem
+backend/key_log/

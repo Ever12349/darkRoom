@@ -6,23 +6,53 @@ if (localStorage.token) {
 
 import socket, { } from "./socket";
 
+import {
+    isString, isNumber
+    // } from '@/util/DataType.js'
+} from '../util/dataType.js'
+
 
 import public_key from '@/pem/secret_key.js'
 
 // const public_key = require('@/pem/secret_key.js')
 
-window.console.log(public_key,'public_key')
+window.console.log(public_key, 'public_key')
 
 
 // const baseUrl = 'http://localhost:3000'
 // const baseUrl = 'http://192.168.43.68:3000'
 
 const baseUrl = `${process.env.VUE_APP_BASEURL}`
-window.console.log(baseUrl,'baseUrl')
+window.console.log(baseUrl, 'baseUrl')
 const api = {
     // visitorSendMessage: function (message) {
     //     axios.post(message)
     // },
+
+    getUserInfoByUserCode: function (user_code) {
+        return new Promise((resolve, reject) => {
+            if (user_code && (isString(user_code) || isNumber(user_code))) {
+                const user_info = window.$phoneApp.$store.state.user_info_state[user_code];
+                window.console.log(user_info, 'uuuuuuuuuuu______________iiiiiiiiiiiiiiiii');
+                if (user_info) {
+                    resolve(user_info)
+                } else {
+                    axios.post(`${baseUrl}/users/register`, { user_code, }).then(res => {
+                        if (res.data.code == 200) {
+                            // let b = 2
+                        } else {
+                            // let a = 1
+                        }
+                    })
+                }
+
+
+            } else {
+                reject('参数错误！！！')
+            }
+
+        })
+    },
 
     userRegister: function (data) {//用户注册
         return axios.post(`${baseUrl}/users/register`, {
@@ -33,9 +63,14 @@ const api = {
         })
     },
 
-    checkUserNameLegality: function (user_name) {//检查用户名是否合法
+    userLogin: function (data) {//用户登录
+        return axios.post(`${baseUrl}/users/user_login_in`, data)
+    },
+
+    checkUserNameLegality: function (user_name, user_code) {//检查用户名是否合法
+        window.console.log(user_name, user_code, 'check')
         return axios.post(`${baseUrl}/users/check_user_name_legality`, {
-            user_name,
+            user_name, user_code
         })
     },
 

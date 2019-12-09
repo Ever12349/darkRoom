@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-import {tokenFilter} from '../controller/filter/filter.js'
+import { tokenFilter } from '../controller/filter/filter.js'
 
 router.prefix('/users')
 
@@ -12,12 +12,13 @@ router.prefix('/users')
 // })
 
 
-import {keep_user_online} from '../controller/user/user_online.js'
-import {checkUserNameLegality,register} from '../controller/user/user.js'
+import { keep_user_online } from '../controller/user/user_online.js'
+import { checkUserNameLegality, register, userLoginin } from '../controller/user/user.js'
 
 
-router.post('/keep_user_online',keep_user_online)
-router.post('/check_user_name_legality',tokenFilter,checkUserNameLegality)
-router.post('/register',tokenFilter,register)
+router.post('/keep_user_online', keep_user_online)
+router.post('/check_user_name_legality', tokenFilter, checkUserNameLegality)
+router.post('/register', tokenFilter, register)
+router.post('/user_login_in', tokenFilter, userLoginin)
 
 module.exports = router

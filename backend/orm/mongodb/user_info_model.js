@@ -19,9 +19,9 @@ const UserinfoSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
-    password:{//密码
-        type:String
-    },
+    // password:{//密码
+    //     type:String
+    // },
     user_status: {//表示用户是否注册 1，表示已注册 0表示未注册
         type: Number,
         default: 0,

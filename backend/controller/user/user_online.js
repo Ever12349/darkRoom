@@ -110,7 +110,7 @@ export async function register(ctx,next){
         
         //判断用户名是否重复
 
-        let result = await checkUserName(user_name);
+        let result = await checkUserName(user_name,user_code);
         if(result){//表示用户名可用
 
             let new_user_info = await UserInfoModel.findByIdAndUpdate({

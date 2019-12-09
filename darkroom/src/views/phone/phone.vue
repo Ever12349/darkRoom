@@ -4,6 +4,13 @@
       <router-view v-if="!!$route.meta.keepAlive"></router-view>
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive"></router-view>
+
+    <application-friends
+      @hidden="hiddenApplication"
+      :currentUserCode="current_user_code"
+      v-if="show_application_friends_flag"
+    ></application-friends>
+
     <mt-tabbar v-model="selected">
       <mt-tab-item id="tab1">
         <img slot="icon" src="@/assets/底部导航/动态圈.gif" /> 大厅
@@ -33,7 +40,9 @@ const selected_path = {
 export default {
   data() {
     return {
-      selected: "tab1"
+      selected: "tab1",
+      show_application_friends_flag: false,
+      current_user_code: null
       // option_path: Object.freeze({
       //   tab1: "/phone_hall",
       //   tab2: "/friends",
@@ -43,6 +52,10 @@ export default {
   },
   created() {
     window.$phoneApp = this;
+  },
+  components: {
+    applicationFriends: () =>
+      import("@/components/phone/applicationFriends.vue")
   },
   mounted() {
     const route = this.$route.path;
@@ -60,11 +73,20 @@ export default {
     // }
   },
   methods: {
+    showApplication(user_code) {
+      // const user_info = this.$
+      this.current_user_code = user_code;
+      this.show_application_friends_flag = true;
+    },
+    hiddenApplication() {
+      this.show_application_friends_flag = false;
+      this.current_user_code = null;
+    },
     showToast(message, time) {
       Toast({
         message: message,
         // position: "bottom",
-        duration: time||1500
+        duration: time || 1500
       });
     }
   }

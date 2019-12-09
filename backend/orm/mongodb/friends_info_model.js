@@ -1,5 +1,6 @@
-import mongoose from '../../config/mongodb.js'
+// import mongoose from '../../config/mongodb.js'
 
+const mongoose = require('../../config/mongodb.js')
 
 const friendsInfoSchema = new mongoose.Schema({
     order_id:{

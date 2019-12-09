@@ -2,11 +2,11 @@
   <div>
     <div :style='{"background-color":`${ismine?"#43df17ad":"#d6d8e1a1"}`}' class='bg'>
       <div class='header'>
-        <div @click='doSomeTing'>
+        <div @click.stop='applicationFriends(user_code)'>
           {{ user_name }}
         </div>
         <i v-show='to_user_code' class="cubeic-arrow"></i>
-        <div v-show='to_user_code'>
+        <div v-show='to_user_code' @click.stop='applicationFriends(to_user_code)'>
           {{ to_user_name }}
         </div>
         <div class='placeholder'></div>
@@ -42,7 +42,6 @@
           没有更多
         </div>
       </div>
-
     </div>
     <!-- <transition enter-active-class='animated fadeInDown' leave-active-class="animated fadeOutUp" class='transition_div'> -->
     <!-- </transition> -->
@@ -56,7 +55,7 @@ moment.locale("zh-cn");
 export default {
   name: "message_item",
   components: {
-    responseItem: () => import("@/components/phone/response_item.vue")
+    responseItem: () => import("@/components/phone/response_item.vue"),
   },
   props: {
     messageData: {
@@ -87,6 +86,13 @@ export default {
     // this.
   },
   methods: {
+    applicationFriends(user_code){
+      // alert(user_code === parseInt(localStorage.user_code))
+      if(user_code !== parseInt(localStorage.user_code)){
+        // window.console.log(localStorage.user_code)
+        window.$phoneApp.showApplication(user_code)
+      }
+    },
     doSomeTing(){
       this.friendsApplication({
         user_code:localStorage.user_code,

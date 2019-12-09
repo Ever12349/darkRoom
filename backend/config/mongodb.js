@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 
 const mongodburl = `${process.env.MONGODBURL}`;
+console.log(process.env.MONGODBURL,'process.env.MONGODBURL')
 mongoose.set('useCreateIndex', true)
 mongoose.connect(mongodburl,{
   useNewUrlParser: true,

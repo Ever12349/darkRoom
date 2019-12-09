@@ -67,6 +67,7 @@ app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
-import './schedule/schedule_task.js'
+console.log(process.env.MONGODBURL,'appp___________url')
+// import './schedule/schedule_task.js'
 
 module.exports = app

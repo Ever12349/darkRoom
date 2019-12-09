@@ -31,6 +31,16 @@ import UserInfoModel from '../orm/mongodb/user_info_model.js'
 import UserNameModel from '../orm/mongodb/user_name_model.js'
 import UserCodeModel from '../orm/mongodb/user_code_model.js'
 import PublicMessageModel from '../orm/mongodb/public_message_model.js'
+import UserPasswordModel from '../orm/mongodb/user_password_info_model.js'
+import { encryptPassword } from './secret.js'
+
+
+// !function() {
+//     UserNameModel.find().then(res=>{
+//         const len = res.length;
+//         console.log(res,len)
+//     })
+//  } ()
 
 
 export async function getRandonUserName() {//随机获取一个不重复user_name
@@ -64,6 +74,65 @@ export async function saveUserInfomation(user_data) {//保存用户信息
         user_status: user_data.user_status
     })
     user_model.save();
+}
+
+export function upDateUserInfo(user_info) {
+    return new Promise(async (resolve, reject) => {
+        const user_code = user_info.user_code;
+        if (user_code) {
+            UserInfoModel.updateOne({
+                user_code,
+                user_status: 0
+            }, {
+                ...user_info
+            },
+                // (result)=>{
+                //     console.log(result, user_info, 'upDateUserInfo')
+                // }
+            )
+                .then(res => {
+                    resolve(user_info);
+                    //数据更新后更改redis中的数据
+                    console.log(res, user_info, 'upDateUserInfo');
+                    const redis_key = `user_info!${user_code}!user_info`;
+                    redisSetEx(redis_key, JSON.stringify(user_info), 600)
+
+                })
+        } else {
+            reject('no user_code')
+        }
+
+    })
+}
+
+export function updatePassword(user_code, en_password) {
+    return new Promise(async (resolve, reject) => {
+        UserPasswordModel.findOne({ user_code }).then(res => {
+            if (res) {
+                UserPasswordModel.updateOne({
+                    user_code,
+                    password: en_password
+                }).then(value => {
+                    console.log(value)
+                    resolve(value)
+                })
+
+            } else {
+                const model = new UserPasswordModel({
+                    user_code,
+                    password: en_password
+                });
+                model.save((err, product) => {
+                    console.log(err, product, 'updatePassword')
+                    if (err) {
+
+                    } else {
+                        resolve(product)
+                    }
+                });
+            }
+        })
+    })
 }
 
 export function verifyJwtToken(token) {//翻译jwt_token
@@ -195,7 +264,7 @@ export function getUserInfo(value) {
                 })
             })
             await Promise.all(promises)
-        } else if (isString(value)) {
+        } else if (isString(value) || isNumber(value)) {
             const user_code = value;
             const redis_key = `user_info!${user_code}!user_info`;
             let user_info = await redisGet(redis_key);
@@ -296,12 +365,19 @@ export function setNewPublicResponseMessageNum(order_id) {
 
 
 
-export function checkUserName(user_name) {
+export function checkUserName(user_name, user_code) {
+    console.log(user_name, user_code)
     return new Promise(async (resolve, reject) => {
         if (isString(user_name)) {
             UserInfoModel.findOne({
                 user_name: user_name,
                 user_status: 1,
+                $nor: [{
+                    user_code,
+                }]
+                // user_code:{
+                //     $nor:user_code
+                // }
             }).then(res => {
                 if (!res) {
                     resolve(true)
@@ -316,13 +392,13 @@ export function checkUserName(user_name) {
     })
 }
 
-export function currentCipherKey(){//当前加解密码的密钥
-    return new Promise((resolve,reject)=>{
-        
+export function currentCipherKey() {//当前加解密码的密钥
+    return new Promise((resolve, reject) => {
+
     })
 }
 
-export function passwordCipher(password){//密码加密
+export function passwordCipher(password) {//密码加密
 
 }
 
