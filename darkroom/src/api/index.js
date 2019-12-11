@@ -29,19 +29,31 @@ const api = {
     //     axios.post(message)
     // },
 
+    getMessageRecordList: function (data) {
+        return axios.post(`${baseUrl}/api/get_message_list`, data)
+    },
+
     getUserInfoByUserCode: function (user_code) {
         return new Promise((resolve, reject) => {
             if (user_code && (isString(user_code) || isNumber(user_code))) {
-                const user_info = window.$phoneApp.$store.state.user_info_state[user_code];
-                window.console.log(user_info, 'uuuuuuuuuuu______________iiiiiiiiiiiiiiiii');
+                let user_info
+                try {
+                    user_info = window.$phoneApp.$store.state.user_info_state[user_code];
+                } catch (e) {
+                    user_info = null;
+                }
+                // window.console.log(user_info, 'uuuuuuuuuuu______________iiiiiiiiiiiiiiiii');
                 if (user_info) {
                     resolve(user_info)
                 } else {
-                    axios.post(`${baseUrl}/users/register`, { user_code, }).then(res => {
+                    axios.post(`${baseUrl}/users/get_user_info`, { user_code }).then(res => {
                         if (res.data.code == 200) {
+                            resolve(res.data.user_info[user_code]);
+                            window.$phoneApp.$phoneApp.$store.commit('addNewUserInfo', res.data.user_info)
                             // let b = 2
                         } else {
                             // let a = 1
+                            reject('error')
                         }
                     })
                 }
@@ -98,11 +110,8 @@ const api = {
         })
     },
 
-    friendsApplication(data) {
-        return axios.post(`${baseUrl}/api/friends_application`, {
-            user_code: data.user_code,
-            to_user_code: data.to_user_code
-        })
+    friendsApplication(data) {//好友申请
+        return axios.post(`${baseUrl}/api/friends_application`, data)
     }
 }
 

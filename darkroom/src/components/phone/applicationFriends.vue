@@ -2,7 +2,7 @@
   <div @click="hidden" class="application_bg">
     <div @click.stop class="app_item">
       <mt-button @click="showUserInfoDetail" size="large">查看详情</mt-button>
-      <mt-button type="primary" size="large">好友申请</mt-button>
+      <mt-button @click="application" type="primary" size="large">好友申请</mt-button>
       <div class="placeholder_div"></div>
     </div>
     <user-info-detail
@@ -10,10 +10,17 @@
       :userCode="currentUserCode"
       v-if="show_user_info_detail_flag"
     ></user-info-detail>
+    <signin-item
+      @signinSucess="signinSucess"
+      @hiddenSigninDiv="hiddenSigninDiv"
+      v-if="show_sign_in_item_flag"
+    ></signin-item>
   </div>
 </template>
 
 <script>
+const mt_message_action_word = ["cancel", "confirm", "alert"];
+const xss = require("xss");
 export default {
   props: {
     currentUserCode: {
@@ -22,16 +29,68 @@ export default {
   },
   data() {
     return {
-      show_user_info_detail_flag: false
+      show_user_info_detail_flag: false,
+      show_sign_in_item_flag: false
     };
   },
   components: {
-    userInfoDetail: () => import("@/components/phone/user_info_detail.vue")
+    userInfoDetail: () => import("@/components/phone/user_info_detail.vue"),
+    signinItem: () => import("@/components/phone/sign_in_item.vue")
   },
   mounted() {
     window.console.log(this.currentUserCode, "currentUserCodecurrentUserCode");
   },
   methods: {
+    signinSucess() {
+      this.hiddenSigninDiv();
+    },
+    showSigninItem() {
+      this.show_sign_in_item_flag = true;
+    },
+    hiddenSigninDiv() {
+      this.show_sign_in_item_flag = true;
+    },
+    application() {
+      const user_status = !!parseInt(localStorage.user_status);
+      if (user_status) {
+        window.$phoneApp.showPrompt(
+          {
+            title: "好友申请",
+            message: "我要对Ta说：",
+            input_placeholder: "你好！"
+          },
+          data => {
+            window.console.log(
+              "5555555555",
+              data,
+              data.action === mt_message_action_word[1],
+              data.action,
+              mt_message_action_word[1]
+            );
+            if (data.action === mt_message_action_word[1]) {
+              const user_code = localStorage.user_code,
+                to_user_code = this.currentUserCode;
+
+              window.console.log(user_code, to_user_code);
+              this.$myapi
+                .friendsApplication({
+                  user_code,
+                  to_user_code,
+                  message: xss(data.value)
+                })
+                .then(res => {
+                  window.console.log(res.data, "riendsApplication");
+                });
+            }
+          }
+        );
+      } else {
+        this.showSigninItem();
+        // window.$phoneApp.showToast()
+        // this.$router.push({
+        // })
+      }
+    },
     showUserInfoDetail() {
       // window.$phoneApp.
       this.show_user_info_detail_flag = true;

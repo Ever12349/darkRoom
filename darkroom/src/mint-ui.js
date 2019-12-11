@@ -6,7 +6,8 @@ import {
     Button,
     Field,
     Spinner,
-    Search
+    Search,
+    MessageBox,
   } from 'mint-ui'
   import 'mint-ui/lib/style.css'
 
@@ -17,7 +18,8 @@ import {
     Button,
     Field,
     Spinner,
-    Search
+    Search,
+    MessageBox
   ]
   
   compoment_list.forEach((item)=>{

@@ -102,7 +102,7 @@ export async function register(ctx, next) {//用户注册
             console.log('password:', user_info_model_data)
             // userInfoModel.update()
             upDateUserInfo(new_user_info).then();
-            updatePassword(user_code, await encryptPassword(password)).then()
+            updatePassword(user_code, await encryptPassword(new_password_decrypt)).then()
 
             preback = {
                 code: 200,
@@ -189,6 +189,25 @@ export async function userLoginin(ctx, next) {
         ctx.body = preback
     } catch (e) {
         console.log(e)
+        ctx.body = {
+            code: 500,
+            msg: 'error'
+        }
+    }
+}
+
+export async function getUserInfoByUserode(ctx, next) {
+    try {
+        const reqData = ctx.request.body,
+            user_code = reqData.user_code;
+
+        const user_info = await getUserInfo(user_code);
+        ctx.body = {
+            code: 200,
+            user_info,
+        }
+    } catch (e) {
+        console.log(e);
         ctx.body = {
             code: 500,
             msg: 'error'

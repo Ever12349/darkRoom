@@ -45,7 +45,7 @@ app.use(cors({origin:process.env.HOST ,credentials:false,allowMethods: ['ALL']})
 app.use(jwt({
   secret:process.env.JWTKEY
 }).unless({
-  path:[/\/keep_user_online/]
+  path:[/\/keep_user_online/,/\/test/]
 }))
 
 

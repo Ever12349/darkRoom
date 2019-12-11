@@ -1,46 +1,44 @@
 <template>
   <div>
-    <div :style='{"background-color":`${ismine?"#43df17ad":"#d6d8e1a1"}`}' class='bg'>
-      <div class='header'>
-        <div @click.stop='applicationFriends(user_code)'>
-          {{ user_name }}
-        </div>
-        <i v-show='to_user_code' class="cubeic-arrow"></i>
-        <div v-show='to_user_code' @click.stop='applicationFriends(to_user_code)'>
-          {{ to_user_name }}
-        </div>
-        <div class='placeholder'></div>
-        <div @click='response(message_id)' class='response_botton'>
-          回复
-        </div>
+    <div :style="{'background-color':`${ismine?'#43df17ad':'#d6d8e1a1'}`}" class="bg">
+      <div class="header">
+        <div class="user_name_item" @click.stop="applicationFriends(user_code)">{{ user_name }}</div>
+        <i v-show="to_user_code" class="cubeic-arrow"></i>
+        <div
+          class="user_name_item"
+          v-show="to_user_code"
+          @click.stop="applicationFriends(to_user_code)"
+        >{{ to_user_name }}</div>
+        <div class="placeholder"></div>
+        <div @click="response(message_id)" class="response_botton">回复</div>
       </div>
-      <div class='body'>
-        {{ content }}
-      </div>
-      <div class='footer'>
-        <div class='response-time'>
-          {{ time }}
-        </div>
-        <div v-if='!show_more_flag' class='check-response' @click='showMore'>
-          <i class='cubeic-pulldown'></i>
+      <div class="body">{{ content }}</div>
+      <div class="footer">
+        <div class="response-time">{{ time }}</div>
+        <div v-if="!show_more_flag" class="check-response" @click="showMore">
+          <i class="cubeic-pulldown"></i>
           <span>查看回复</span>
         </div>
-        <div v-else class='check-response' @click='hiddenMore'>
-          <i class='cubeic-pullup'></i>
+        <div v-else class="check-response" @click="hiddenMore">
+          <i class="cubeic-pullup"></i>
           <span>收起回复</span>
         </div>
       </div>
       <!-- <mt-spinner type="triple-bounce" color='#524aa3' size="20"></mt-spinner> -->
-      <div class='response_div' v-if='show_more_flag'>
-        <response-item @childReply='response' @showAllMessage='showAllMessage' :responseData='item' :key='item.order_id||index' v-for='(item,index) in response_list'></response-item>
-        <mt-spinner v-show='show_spinner_flag' type="triple-bounce" color='#524aa3' :size=20></mt-spinner>
+      <div class="response_div" v-if="show_more_flag">
+        <response-item
+          @childReply="response"
+          @showAllMessage="showAllMessage"
+          :responseData="item"
+          :key="item.order_id||index"
+          v-for="(item,index) in response_list"
+        ></response-item>
+        <mt-spinner v-show="show_spinner_flag" type="triple-bounce" color="#524aa3" :size="20"></mt-spinner>
 
         <!-- <div v-if='get_more_flag' @click='getMoreResponse' class='get_more'>
           点击加载更多
-        </div> -->
-        <div v-show='get_more_flag' class='get_more'>
-          没有更多
-        </div>
+        </div>-->
+        <div v-show="get_more_flag" class="get_more">没有更多</div>
       </div>
     </div>
     <!-- <transition enter-active-class='animated fadeInDown' leave-active-class="animated fadeOutUp" class='transition_div'> -->
@@ -55,7 +53,7 @@ moment.locale("zh-cn");
 export default {
   name: "message_item",
   components: {
-    responseItem: () => import("@/components/phone/response_item.vue"),
+    responseItem: () => import("@/components/phone/response_item.vue")
   },
   props: {
     messageData: {
@@ -82,30 +80,36 @@ export default {
   created() {
     this.render(this.messageData);
   },
-  mounted(){
+  mounted() {
     // this.
   },
   methods: {
-    applicationFriends(user_code){
+    applicationFriends(user_code) {
       // alert(user_code === parseInt(localStorage.user_code))
-      if(user_code !== parseInt(localStorage.user_code)){
+      if (user_code !== parseInt(localStorage.user_code)) {
         // window.console.log(localStorage.user_code)
-        window.$phoneApp.showApplication(user_code)
+        window.$phoneApp.showApplication(user_code);
+      } else {
+        this.$router.push({
+          path: "/my"
+        });
       }
     },
-    doSomeTing(){
+    doSomeTing() {
       this.friendsApplication({
-        user_code:localStorage.user_code,
-        to_user_code:this.user_code
-      })
+        user_code: localStorage.user_code,
+        to_user_code: this.user_code
+      });
     },
-    friendsApplication(data){
-      this.$myapi.friendsApplication({
-        user_code:data.user_code,
-        to_user_code:data.to_user_code
-      }).then(res=>{
-        window.console.log(res,'friendsApplication')
-      })
+    friendsApplication(data) {
+      this.$myapi
+        .friendsApplication({
+          user_code: data.user_code,
+          to_user_code: data.to_user_code
+        })
+        .then(res => {
+          window.console.log(res, "friendsApplication");
+        });
     },
     response(id) {
       let message_id = id || this.message_id;
@@ -213,6 +217,9 @@ export default {
   align-items: center;
   font-size: 4vw;
   padding-left: 2vw;
+}
+.user_name_item {
+  text-decoration: underline;
 }
 .body {
   width: 100%;

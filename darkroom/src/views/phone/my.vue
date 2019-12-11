@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       user_name: localStorage.user_name,
-      is_login: !!localStorage.user_status,
+      is_login: !!parseInt(localStorage.user_status),
       show_login_in_div_flag: false,
       show_sign_in_div_flag: false
     };

@@ -206,6 +206,7 @@ export function encryptCryptoJs(word, random_key = '123456789', random_iv = '111
 
 export async function encryptPassword(password) {
     //获取加密密钥
+    console.log('_________password_________:  ',password)
     let key_obj = await getOldEncryptKey();
     if (!key_obj) {
 
@@ -217,6 +218,7 @@ export async function encryptPassword(password) {
 
     const key_str = key_obj.key, iv_str = key_obj.iv;
     const encrypted_string = encryptCryptoJs(password, key_str, iv_str);
+    console.log('encrypted_string:  ',encrypted_string)
     return encrypted_string
 
 }

@@ -63,7 +63,7 @@ export function redisIncr(key) {//某个项目的值+1
 }
 
 export function redisLpush(key, value_list) {
-    console.log(key, value_list, 'redisLpush')
+    // console.log(key, value_list, 'redisLpush')
     return new Promise((resolve, reject) => {
         if (isArray(value_list) && (!!value_list.length)) {
             const list = value_list.map((item, idnex) => {

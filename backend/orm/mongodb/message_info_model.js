@@ -8,11 +8,11 @@ const messageInfoSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    user_code:{
+    user_code:{//发送消息的用户
         type:Number,
         require:true,
     },
-    to_user_code:{
+    to_user_code:{//接收消息的用户
         type:Number,
         index:true
     },
@@ -25,6 +25,9 @@ const messageInfoSchema = new mongoose.Schema({
         type:Number,
         default:1,
         enum:[1,2],
+    },
+    message:{
+        type:String
     },
     create_time:{
         type:Date,

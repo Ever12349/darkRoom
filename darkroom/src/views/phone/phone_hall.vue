@@ -104,6 +104,9 @@ export default {
     },
     showInput() {
       this.show_input_box_flag = true;
+      // this.$router.push({
+      //   path:'/chatting/6666666666666'
+      // })
     },
     hiddenInput() {
       this.show_input_box_flag = false;

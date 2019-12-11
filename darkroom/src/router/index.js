@@ -4,7 +4,10 @@ import VueRouter from 'vue-router'
 // import pcHall from '../views/pc/pc_hall.vue'
 // import phoneHall from '../views/phone/phone_hall.vue'
 import { isPc } from '../util'
-
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 Vue.use(VueRouter)
 
 const routes = [
@@ -22,7 +25,7 @@ const routes = [
   },
   {
     path: '/phone',
-    name: 'phone_hall',
+    name: 'phone',
     component: () => import('../views/phone/phone.vue'),
     children: [{
       path: '/phone_hall',
@@ -32,11 +35,18 @@ const routes = [
     }, {
       path: '/friends',
       name: 'friends',
+      meta: { keepAlive: true },
       component: () => import('../views/phone/friends.vue')
     }, {
       path: '/my',
       name: 'my',
+      meta: { keepAlive: true },
       component: () => import('../views/phone/my.vue')
+    }, {
+      path: '/chatting/:userCode',
+      name: 'chatting',
+      props: true,
+      component: () => import('../views/phone/chatting.vue')
     }],
   },
   {
