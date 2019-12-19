@@ -44,7 +44,7 @@ export default {
       user_code: null,
       message_type_flag: null,
       create_time: null,
-      unread_num: 999
+      unread_num: 9
     };
   },
   methods: {
@@ -93,11 +93,17 @@ export default {
   height: 8vw;
 }
 .item_content {
-  display: flex;
+  /* display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: center; */
+  max-width: 60vw;
   font-size: 3vw;
+  line-height: 4vw;
   height: 4vw;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .list_right {
   display: flex;
@@ -121,6 +127,8 @@ export default {
   /* flex:1; */
   width: 5vw;
   height: 5vw;
+  align-self: flex-end;
+  margin-right: 3vw;
 }
 .list_right_item {
   display: flex;

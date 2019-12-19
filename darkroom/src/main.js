@@ -10,6 +10,10 @@ import Vtap from 'v-tap'
 
 Vue.config.productionTip = false
 
+
+import mixinObj from './mixin'
+Vue.mixin( mixinObj)
+
 Vue.use(api)
 Vue.use(Vtap)
 

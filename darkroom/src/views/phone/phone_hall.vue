@@ -1,13 +1,28 @@
 <template>
-  <div class='bg'>
-    <mt-header :title='tittle_message'></mt-header>
+  <div class="bg">
+    <mt-header :title="tittle_message"></mt-header>
     <div class="scroll-list-wrap">
-      <cube-scroll ref="scroll" :options="options" @pulling-down='pullingDown' @pulling-up='pullingUp'>
-        <message-item @response='response' :key='index' :messageData='item' v-for='(item,index) in message_list'></message-item>
+      <cube-scroll
+        ref="scroll"
+        :options="options"
+        @pulling-down="pullingDown"
+        @pulling-up="pullingUp"
+      >
+        <message-item
+          @response="response"
+          :key="index"
+          :messageData="item"
+          v-for="(item,index) in message_list"
+        ></message-item>
       </cube-scroll>
     </div>
-    <mt-button size="small" @click='showInput' class='transmit_message' type="primary">发送信息</mt-button>
-    <message-input-box :orderId='response_order_id' v-if='show_input_box_flag' @hidden='hiddenInput' @sendMessage='sendMessage'></message-input-box>
+    <mt-button size="small" @click="showInput" class="transmit_message" type="primary">发送信息</mt-button>
+    <message-input-box
+      :orderId="response_order_id"
+      v-if="show_input_box_flag"
+      @hidden="hiddenInput"
+      @sendMessage="sendMessage"
+    ></message-input-box>
   </div>
 </template>
 
@@ -47,6 +62,11 @@ export default {
   created() {
     this.getMessageList();
   },
+  activated() {
+    // this.$refs.scroll.forceUpdate({
+    //   dirty: true
+    // });
+  },
   methods: {
     pullingDown() {
       window.console.log("pullingDown");
@@ -57,7 +77,7 @@ export default {
       this.pageNo++;
       this.getMessageList();
     },
-    response(order_id){
+    response(order_id) {
       this.response_order_id = order_id;
       this.show_input_box_flag = true;
     },

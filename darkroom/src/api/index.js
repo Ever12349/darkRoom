@@ -24,14 +24,61 @@ window.console.log(public_key, 'public_key')
 
 const baseUrl = `${process.env.VUE_APP_BASEURL}`
 window.console.log(baseUrl, 'baseUrl')
-const api = {
-    // visitorSendMessage: function (message) {
-    //     axios.post(message)
-    // },
 
-    getMessageRecordList: function (data) {
+const socket_api = {
+    closeSocketConnection() {
+        socket.close()
+    },
+    reConnectionSocket() {
+        this.closeSocketConnection();
+        socket.open()
+    }
+}
+
+export function setNewUserInfo(user_info) {
+    try {
+        window.$phoneApp.$phoneApp.$store.commit('addNewUserInfo', user_info)
+    } catch (error) {
+        window.console.log()
+    }
+}
+
+
+
+const message_api = {
+
+    getMessageListToSomeOne(data) {//获取与某人的消息记录
+        return axios.post(`${baseUrl}/api/get_message_list_to_some_one`, data)
+    },
+
+    getMessageRecordList: function (data) {//获取消息记录
         return axios.post(`${baseUrl}/api/get_message_list`, data)
     },
+
+    sendMessage(data) {
+        return axios.post(`${baseUrl}/api/send_message`, data)
+    }
+
+}
+
+const friends_api = {//好友api接口
+    getFriendsList: function (data) {//获取好友列表
+        return axios.post(`${baseUrl}/api/get_friends_list`, data)
+    },
+
+    agreeFriendsApplication: function (data) {//同意好友申请
+        return axios.post(`${baseUrl}/api/agree_friends_application`, data)
+    },
+
+    friendsApplication(data) {//好友申请
+        return axios.post(`${baseUrl}/api/friends_application`, data)
+    },
+
+
+};
+
+
+const api = {
 
     getUserInfoByUserCode: function (user_code) {
         return new Promise((resolve, reject) => {
@@ -49,10 +96,8 @@ const api = {
                     axios.post(`${baseUrl}/users/get_user_info`, { user_code }).then(res => {
                         if (res.data.code == 200) {
                             resolve(res.data.user_info[user_code]);
-                            window.$phoneApp.$phoneApp.$store.commit('addNewUserInfo', res.data.user_info)
-                            // let b = 2
+                            setNewUserInfo(res.data.user_info);
                         } else {
-                            // let a = 1
                             reject('error')
                         }
                     })
@@ -110,13 +155,12 @@ const api = {
         })
     },
 
-    friendsApplication(data) {//好友申请
-        return axios.post(`${baseUrl}/api/friends_application`, data)
-    }
+    ...socket_api,
+    ...friends_api, ...message_api
 }
 
 export default function install(Vue) {
-    socket.on();
+    // socket.on();
     Vue.prototype.$myapi = api
 }
 
@@ -128,3 +172,23 @@ export function keep_user_online(data) {
 export function setAjaxToken(token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
+
+export function saveSocketId(data) {
+    socket.emit('save_socket_id', data)
+}
+
+export function addNewMessage(data) {
+    try {
+        const user_code = data.user_code,
+            list = data.message_list;
+        window.$phoneApp.$store.commit('addNewMessage', { user_code, data: list })
+    } catch (error) {
+        window.console.log(error)
+    }
+}
+
+
+// export function getMessageListKey(user_code) {
+//     const key = `message_list!${user_code}`;
+//     return key
+// }

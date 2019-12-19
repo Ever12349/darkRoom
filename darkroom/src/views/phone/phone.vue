@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="phoneApp">
     <keep-alive :max="10">
       <router-view v-if="!!$route.meta.keepAlive"></router-view>
     </keep-alive>
@@ -59,7 +59,7 @@ export default {
       selected: "tab1",
       show_application_friends_flag: false,
       current_user_code: null,
-      show_tabbar_flag: true
+      show_tabbar_flag: false
       // option_path: Object.freeze({
       //   tab1: "/phone_hall",
       //   tab2: "/friends",
@@ -69,10 +69,16 @@ export default {
   },
   created() {
     window.$phoneApp = this;
+    this.show_tabbar_flag = !!selected_path[this.$route.path];
   },
   components: {
     applicationFriends: () =>
       import("@/components/phone/applicationFriends.vue")
+  },
+  computed: {
+    fullPath() {
+      return this.$route.fullPath;
+    }
   },
   mounted() {
     const route = this.$route.path;
@@ -80,15 +86,24 @@ export default {
     this.selected = selected_path[route];
   },
   watch: {
-    $route(route) {
-      // window.console.log(value)
-      this.selected = selected_path[route.path];
-      if (this.selected) {
-        this.show_tabbar_flag = true;
-      } else {
-        this.show_tabbar_flag = false;
-      }
+    fullPath(path) {
+      window.console.log(path);
+      this.selected = selected_path[path];
+      // if (this.selected) {
+      this.show_tabbar_flag = !!this.selected;
+      // } else {
+      //   this.show_tabbar_flag = false;
+      // }
     },
+    // $route(route) {
+    //   // window.console.log(value)
+    //   // this.selected = selected_path[route.path];
+    //   // if (this.selected) {
+    //   //   this.show_tabbar_flag = true;
+    //   // } else {
+    //   //   this.show_tabbar_flag = false;
+    //   // }
+    // },
     selected(selected) {
       window.console.log(option_path[selected]);
       const router_path = option_path[selected];
@@ -125,15 +140,6 @@ export default {
       });
     },
     showPrompt(data, callback) {
-      // const mess = MessageBox.prompt(
-      //   data.message || "提示",
-      //   data.title || "提示信息",
-      //   {}
-      // ).then(res => {
-      //   window.console.log(arguments, res);
-      //   callback && callback();
-      // });
-      // window.console.log(mess,'messmess')
       MessageBox(
         {
           title: data.title || "提示信息",
@@ -149,18 +155,23 @@ export default {
           window.console.log(arguments, "[[[[[[[[[[[[[[[[");
         }
       ).then(({ value, action }) => {
-        window.console.log(
-          arguments,
-          value,
-          action,
-          "sssssssss",
-          value || data.input_placeholder || "请输入"
-        );
         callback &&
           callback({
             value: value || data.input_placeholder || "请输入",
             action
           });
+      });
+    },
+    showConfrim(data, callback) {
+      MessageBox({
+        title: data.title || "提示信息",
+        message: data.message || "提示",
+        showConfirmButton: true,
+        showCancelButton: true,
+        $type: "alert"
+      }).then(res => {
+        // window.console.log(222222, res);
+        callback && callback(res);
       });
     }
   }
@@ -168,4 +179,13 @@ export default {
 </script>
 
 <style>
+.phoneApp {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
 </style>

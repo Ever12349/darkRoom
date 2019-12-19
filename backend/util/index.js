@@ -5,6 +5,8 @@ const randomName = require('random-name')
 
 const redisClient = require('../config/redis_database.js')
 
+import moment from 'moment'
+
 // function isNameRepeat(user_name){//检查名字是否重复
 
 // }
@@ -400,6 +402,12 @@ export function currentCipherKey() {//当前加解密码的密钥
 
 export function passwordCipher(password) {//密码加密
 
+}
+
+
+export function getNowTimeFormat() {
+    let time = moment().utcOffset("+08:00").format('YYYY-MM-DD HH:mm:ss')
+    return time
 }
 
 

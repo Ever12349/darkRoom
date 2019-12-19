@@ -24,6 +24,7 @@
           v-if="!is_login"
         >用户注册</mt-button>
         <mt-button class="my_body_item_button" type="danger" v-else>注销</mt-button>
+        <mt-button @click="testDemo">测试按钮</mt-button>
       </div>
     </div>
     <!-- 登录 -->
@@ -32,7 +33,7 @@
         <mt-field label="用户ID" placeholder="输入用户ID" type="number" v-model="login_user_code"></mt-field>
       </div>  
     </div>-->
-
+    <login-in-item v-if="show_login_in_div_flag" @hidden="hiddenLoginDiv" @success="loginSuccess"></login-in-item>
     <signin-item
       v-if="show_sign_in_div_flag"
       @signinSucess="signinSucess"
@@ -47,7 +48,8 @@ export default {
   name: "my",
   components: {
     // verify: () => import("@/components/verify.vue")
-    signinItem: () => import("@/components/phone/sign_in_item.vue")
+    signinItem: () => import("@/components/phone/sign_in_item.vue"),
+    loginInItem: () => import("@/components/phone/login_in_item.vue")
   },
   data() {
     return {
@@ -59,6 +61,19 @@ export default {
   },
   watch: {},
   methods: {
+    testDemo() {
+      //测试开发用
+      window.console.log("test_demo");
+      // this.$myapi.reConnectionSocket();
+    },
+    loginSuccess() {
+      this.renderData();
+      this.hiddenLoginDiv();
+    },
+    renderData() {
+      this.user_name = localStorage.user_name;
+      this.is_login = !!parseInt(localStorage.user_status);
+    },
     showSigninDiv() {
       this.show_sign_in_div_flag = true;
     },
@@ -68,8 +83,9 @@ export default {
     signinSucess() {
       //注册成功需要重新渲染数据
       window.console.log("注册成功！！！");
-      this.user_name = localStorage.user_name;
-      this.is_login = !!localStorage.user_status;
+      this.renderData();
+      // this.user_name = localStorage.user_name;
+      // this.is_login = !!localStorage.user_status;
     },
     showLoginDiv() {
       this.show_login_in_div_flag = true;

@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 
 
 const mongodburl = `${process.env.MONGODBURL}`;
-console.log(process.env.MONGODBURL,'process.env.MONGODBURL')
+console.log(process.env.MONGODBURL, 'process.env.MONGODBURL')
 mongoose.set('useCreateIndex', true)
-mongoose.connect(mongodburl,{
+mongoose.connect(mongodburl, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -13,7 +13,7 @@ mongoose.connect(mongodburl,{
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('open', function () {
   // we're connected!
   console.log('open')
 });
@@ -21,5 +21,7 @@ db.once('open', function() {
 // import '../orm/mongodb/demo.js'
 
 export default db;
+
+export const demo = 111
 
 module.exports = mongoose;

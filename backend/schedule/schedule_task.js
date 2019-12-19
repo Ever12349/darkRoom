@@ -61,7 +61,7 @@ const task_1 = schedule.scheduleJob(rule_of_task_1, async function () {//该定�
 
             const user_code = item.user_code
 
-            UserPasswordInfoModel.update({
+            UserPasswordInfoModel.updateOne({
                 user_code,
             }, {
                 password: re_en_password

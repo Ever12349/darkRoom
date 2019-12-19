@@ -7,6 +7,7 @@
       ref="tabNav"
       :data="tabLabels"
     ></cube-tab-bar>
+    <div class="line"></div>
     <div class="tab-slide-container">
       <cube-slide
         ref="slide"
@@ -24,14 +25,14 @@
             <cube-scroll ref="scroll" :options="scrollOptions">
 
             </cube-scroll>
-          </div> -->
+          </div>-->
           <friends-list></friends-list>
         </cube-slide-item>
         <!-- 推荐 -->
         <cube-slide-item>
           <!-- <cube-scroll :options="scrollOptions">
 
-          </cube-scroll> -->
+          </cube-scroll>-->
           <message-list></message-list>
         </cube-slide-item>
       </cube-slide>
@@ -48,10 +49,10 @@ const initia_index_obj = (function(arr) {
   return obj;
 })(selected_word);
 export default {
-  name:'friends',
-  components:{
-    friendsList:()=>import('@/components/phone/friends_list'),
-    messageList:()=>import('@/components/phone/message_list')
+  name: "friends",
+  components: {
+    friendsList: () => import("@/components/phone/friends_list"),
+    messageList: () => import("@/components/phone/message_list")
   },
   data() {
     return {
@@ -74,7 +75,7 @@ export default {
         probeType: 3,
         /* lock y-direction when scrolling horizontally and  vertically at the same time */
         directionLockThreshold: 0
-      },
+      }
       // scrollOptions: {
       //   /* lock x-direction when scrolling horizontally and  vertically at the same time */
       //   directionLockThreshold: 0
@@ -101,8 +102,8 @@ export default {
   },
   computed: {
     //可能少一个initialIndex
-    initialIndex(){
-      return initia_index_obj[this.selectedLabel]
+    initialIndex() {
+      return initia_index_obj[this.selectedLabel];
     }
   }
 };
@@ -110,5 +111,10 @@ export default {
 <style>
 .scroll-box {
   height: 96vh;
+}
+.line {
+  width: 100vw;
+  height: 1px;
+  border-top: 1px solid #ccc;
 }
 </style>
