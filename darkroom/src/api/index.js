@@ -32,6 +32,9 @@ const socket_api = {
     reConnectionSocket() {
         this.closeSocketConnection();
         socket.open()
+    },
+    getOnlineUserNum() {
+        return axios.get(`${baseUrl}/users/get_user_online_total_num`)
     }
 }
 
@@ -46,6 +49,9 @@ export function setNewUserInfo(user_info) {
 
 
 const message_api = {
+    cleanMessageUnreadNum(data) {
+        return axios.post(`${baseUrl}/api/clean_message_unread_num`, data)
+    },
 
     getMessageListToSomeOne(data) {//获取与某人的消息记录
         return axios.post(`${baseUrl}/api/get_message_list_to_some_one`, data)

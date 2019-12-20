@@ -13,9 +13,17 @@
 
     <mt-tabbar v-show="show_tabbar_flag" v-model="selected">
       <mt-tab-item id="tab1">
+        <div v-if="public_message_unread_num>0" class="public_message_unread_num_div">
+          <unread-num :num="public_message_unread_num"></unread-num>
+        </div>
+
         <img slot="icon" src="@/assets/底部导航/动态圈.gif" /> 大厅
       </mt-tab-item>
       <mt-tab-item id="tab2">
+        <div v-if="message_unread_num>0" slot="icon" class="num_layer_div">
+          <unread-num :num="message_unread_num"></unread-num>
+        </div>
+
         <img slot="icon" src="@/assets/底部导航/连麦吧.gif" /> 好友
       </mt-tab-item>
       <mt-tab-item id="tab3">
@@ -27,6 +35,7 @@
 
 <script>
 import { Toast, MessageBox } from "mint-ui";
+// import unreadNum from "@/components/phone/unread_num.vue";
 const option_path = {
   tab1: "/phone_hall",
   tab2: "/friends",
@@ -52,7 +61,7 @@ const selected_path = {
 
 //   return target;
 // };
-
+import { message_record_key } from "../../store/message/message_module.js";
 export default {
   data() {
     return {
@@ -60,6 +69,7 @@ export default {
       show_application_friends_flag: false,
       current_user_code: null,
       show_tabbar_flag: false
+
       // option_path: Object.freeze({
       //   tab1: "/phone_hall",
       //   tab2: "/friends",
@@ -73,11 +83,28 @@ export default {
   },
   components: {
     applicationFriends: () =>
-      import("@/components/phone/applicationFriends.vue")
+      import("@/components/phone/applicationFriends.vue"),
+    unreadNum: () => import("@/components/phone/unread_num.vue")
   },
   computed: {
     fullPath() {
       return this.$route.fullPath;
+    },
+    message_unread_num() {
+      let num = 0;
+      this.$store.state.messageRecord.message_resord_list.forEach(user_code => {
+        num += parseInt(
+          this.$store.state.messageRecord[message_record_key(user_code)]
+            .unread_num
+        );
+      });
+      return num;
+    },
+    public_message_unread_num() {
+      window.console.log(this.$store.state.public_message.public_message_num,'this.$store.statethis.$store.statethis.$store.state')
+      let num = this.$store.state.public_message.public_message_num;
+
+      return num;
     }
   },
   mounted() {
@@ -188,4 +215,21 @@ export default {
   bottom: 0;
   overflow: hidden;
 }
+.num_layer_div {
+  width: 5.2vw;
+  height: 5.2vw;
+  position: absolute;
+  top: 1vw;
+  right: 40vw;
+}
+.public_message_unread_num_div {
+  width: 5.2vw;
+  height: 5.2vw;
+  position: absolute;
+  top: 1vw;
+  left: 20vw;
+}
+/* #tab2 {
+  position: relative;
+} */
 </style>

@@ -5,6 +5,12 @@ import {
     getMessageRecordByUserCode
 } from '../friends/uitl.js'
 
+import {
+    redisHashGet, redisHkeys, redisHmget
+} from '../../util/redis_operation.js'
+
+import redisKey from '../../util/redis_key.js'
+
 import MessageInfoModel from '../../orm/mongodb/message_info_model'
 import moment from 'moment';
 
@@ -45,3 +51,25 @@ export function getMessageListByUserCodeToUserCode(user_code, to_user_code) {//æ
     })
 
 }
+
+export function getMessageRecordUnreadNum(user_code) {
+    return new Promise(async (resolve, reject) => {
+        const redis_key = redisKey.unread_num(user_code);
+
+        let redis_fields = await redisHkeys(redis_key);
+
+        let value_list = await redisHmget(redis_key, redis_fields)
+
+        // console.log(redis_fields, value_list, 'redis_fields')
+        let obj = {};
+
+        redis_fields.forEach((string, index) => {
+            obj[string] = parseInt(value_list[index])
+        })
+        console.log(obj, redis_fields, value_list, 'redis_fields')
+
+        resolve(obj);
+    })
+}
+
+

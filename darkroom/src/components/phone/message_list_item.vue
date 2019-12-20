@@ -20,13 +20,19 @@
 // const right_words = {
 //     'application':'添加好友'
 // }
+import { mapState } from "vuex";
+import { message_record_key } from "../../store/message/message_module";
 import moment from "moment";
 moment.locale("zh-cn");
 export default {
   name: "message_list_item",
   props: {
     messageListItem: {
-      type: Object
+      type: [Object, Number, String]
+    },
+    itemIndex: {
+      type: [Number, String],
+      default: 0
     }
   },
   mounted() {
@@ -38,14 +44,47 @@ export default {
   },
   data() {
     return {
-      is_mine: false,
-      user_name: null,
-      content: null,
-      user_code: null,
-      message_type_flag: null,
-      create_time: null,
-      unread_num: 9
+      is_mine: false
+      // user_name: null,
+      // content: null,
+      // user_code: this.messageListItem
+      // message_type_flag: null,
+      // create_time: null
+      // unread_num: 0,
+      // order_id: ""
     };
+  },
+  computed: {
+    user_code() {
+      return this.messageListItem;
+    },
+    ...mapState({
+      unread_num(state) {
+        return state.messageRecord[message_record_key(this.messageListItem)]
+          .unread_num;
+      },
+      message_type_flag(state) {
+        return state.messageRecord[message_record_key(this.messageListItem)]
+          .message_type_flag;
+      },
+      order_id(state) {
+        return state.messageRecord[message_record_key(this.messageListItem)]
+          .order_id;
+      },
+      create_time(state) {
+        return moment(
+          state.messageRecord[message_record_key(this.messageListItem)]
+            .create_time
+        ).fromNow();
+      },
+      content(state) {
+        return state.messageRecord[message_record_key(this.messageListItem)]
+          .message;
+      },
+      user_name(state) {
+        return state.user_info_state[this.messageListItem].user_name;
+      }
+    })
   },
   methods: {
     jumpToChat() {
@@ -54,18 +93,31 @@ export default {
         path: `/chatting/${this.user_code}`
         // path:'/my'
       });
+      // this.$emit("cleanUnreadNum", {
+      //   order_id: this.order_id,
+      //   index: this.itemIndex
+      // });
+      // this.$store.commit("messageRecordUnreadNumClean", this.user_code);
+      let tempData = { ...this.messageListItem };
+      // tempData.unread_num = 0;
+
+      this.init(tempData);
     },
     init(data) {
-      this.is_mine = !!(
-        parseInt(localStorage.user_code) == parseInt(data.user_code)
-      );
+      // this.is_mine = !!(
+      //   parseInt(localStorage.user_code) == parseInt(data.user_code)
+      // );
 
-      this.user_code = this.is_mine ? data.to_user_code : data.user_code;
-      this.content = data.message;
-      const user_info = this.$store.state.user_info_state[this.user_code];
-      this.message_type_flag = data.message_type_flag;
-      this.user_name = user_info.user_name;
-      this.create_time = moment(data.create_time).fromNow();
+      // this.user_code = this.is_mine ? data.to_user_code : data.user_code;
+      // this.content = data.message;
+      // const user_info = this.$store.state.user_info_state[this.messageListItem];
+      // this.message_type_flag = data.message_type_flag;
+      // this.user_name = user_info.user_name;
+      // this.unread_num = parseInt(data.unread_num);
+      // this.order_id = data.order_id;
+      // this.create_time = moment(data.create_time).fromNow();
+
+      window.console.log(data);
     }
   }
 };

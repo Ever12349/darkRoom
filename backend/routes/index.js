@@ -28,8 +28,10 @@ import {
 } from '../controller/filter/filter.js'
 
 import {
-  getMessageList, sendMessage, getMessageListToSomeOne
+  getMessageList, sendMessage, getMessageListToSomeOne, cleanMessageUnreadUnm
 } from '../controller/chatting/chatting.js'
+
+router.post('/api/clean_message_unread_num', tokenFilter, registerFilter, cleanMessageUnreadUnm)
 
 
 router.post('/api/send_message', tokenFilter, registerFilter, sendMessage)

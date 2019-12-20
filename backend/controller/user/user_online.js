@@ -16,6 +16,12 @@ import {
     getUserInfo
 } from '../../util'
 
+import {
+    redisIncr, redisGet
+} from '../../util/redis_operation.js'
+
+import redisKey from '../../util/redis_key.js'
+
 import moment from 'moment';
 import UserInfoModel from '../../orm/mongodb/user_info_model'
 import MessageInfoModel from '../../orm/mongodb/message_info_model'
@@ -103,6 +109,25 @@ function getSocketId(user) {
 
 }
 
+export function setUserOnlineNum() {
+    return new Promise(async (resolve, reject) => {
+        const redis_key = redisKey.online_num();
+
+        redisIncr(redis_key);
+        resolve('succcess')
+
+    })
+}
+
+export function reduceUserOnlineNum() {
+    return new Promise(async (resolve, reject) => {
+        const redis_key = redisKey.online_num();
+        redisIncr(redis_key, -1);
+        resolve('succcess')
+
+    })
+}
+
 export async function keep_user_online(ctx, next) {
     try {
 
@@ -167,6 +192,7 @@ export async function keep_user_online(ctx, next) {
         //保存socket_id
         // saveSocketInfo(user_code, socket_id)
 
+
         ctx.body = {
             code: 200,
             token: new_token,
@@ -181,7 +207,7 @@ export async function keep_user_online(ctx, next) {
         //后续操作
 
         //增加在线人数
-
+        // setUserOnlineNum().then();
 
     } catch (e) {
         console.log(e)
@@ -235,6 +261,30 @@ export async function register(ctx, next) {
 
     } catch (error) {
         console.log(error);
+        ctx.body = {
+            code: 500,
+            msg: 'error'
+        }
+    }
+}
+
+export function getOnlineUserNum() {
+    return new Promise(async (resolve, reject) => {
+        const redis_key = redisKey.online_num();
+        let total_num = parseInt(await redisGet(redis_key));
+        resolve(total_num)
+    })
+}
+
+export async function getUserOnlineTotalNum(ctx, next) {
+    try {
+        const num = await getOnlineUserNum();
+        ctx.body = {
+            code: 200,
+            num,
+        }
+    } catch (error) {
+        console.log(error)
         ctx.body = {
             code: 500,
             msg: 'error'

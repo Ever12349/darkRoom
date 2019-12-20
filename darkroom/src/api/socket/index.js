@@ -39,12 +39,18 @@ socket.on('connect', function () {
     }).then(res => {
 
         const resData = res.data;
-        window.console.log(Boolean(resData.message_data), resData, 'soooooooooo')
+        window.console.log(window.$app.$myapi, Boolean(resData.message_data), resData, 'soooooooooo')
         if (resData.code == 200) {
             localStorage.user_code = resData.user_code;
             localStorage.user_status = resData.user_status;
             localStorage.user_name = resData.user_name;
 
+            window.$app.$myapi.getOnlineUserNum().then(res => {
+                window.console.log(res.data.num, 'getOnlineUserNum');
+                if (res.data.code == 200) {
+                    window.$app.$store.commit('setNewUserOnlineNum', parseInt(res.data.num))
+                }
+            })
 
             saveSocketId({
                 user_code: resData.user_code,
@@ -75,7 +81,18 @@ socket.on('send_message', function (res) {
 
     window.$phoneApp.$store.commit('addNewMessage', { user_code, data: [res] })
 
+    window.$phoneApp.$store.commit('messageRecordChange', { user_code, record: res })
 
+
+})
+
+socket.on('publish_public_message', function () {
+    window.console.log('publish_public_messagepublish_public_message')
+    window.$app.$store.commit('add_public_message_num')
+})
+
+socket.on('user_online_num', function (num) {
+    window.$app.$store.commit('setNewUserOnlineNum', num)
 })
 
 socket.on('disconnect', function () {

@@ -11,6 +11,8 @@ export default {
   data() {
     return {
       message_list: {},
+      message_record: [],
+      // message_detail: {},
       isPC: isPc()
     };
   },
@@ -19,7 +21,7 @@ export default {
   },
   methods: {
     addNewMessageItem(user_code, message_list) {
-      window.console.log(user_code, message_list);
+      window.console.log(user_code, message_list, this.message_record);
       if (this.message_list[user_code]) {
         this.message_list[user_code] = [
           ...this.message_list[user_code],

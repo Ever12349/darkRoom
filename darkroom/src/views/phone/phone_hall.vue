@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <mt-header :title="tittle_message"></mt-header>
+    <mt-header :title="`大厅(在线人数：${user_online_num})`"></mt-header>
     <div class="scroll-list-wrap">
       <cube-scroll
         ref="scroll"
@@ -34,7 +34,7 @@ export default {
       response_order_id: null, //回复别人是的id
       message_list: [],
       show_input_box_flag: false,
-      tittle_message: `大厅(在线人数:100)`,
+      // tittle_message: `大厅(在线人数:100)`,
       options: Object.freeze({
         bounce: {
           bottom: true
@@ -61,6 +61,16 @@ export default {
   },
   created() {
     this.getMessageList();
+  },
+  computed: {
+    user_online_num() {
+      window.console.log(
+        this.$store.state,
+        "this.$store.statethis.$store.state"
+      );
+      return this.$store.state.user_info.total_user_online_num;
+      // return 99
+    }
   },
   activated() {
     // this.$refs.scroll.forceUpdate({
@@ -99,6 +109,7 @@ export default {
               this.$store.commit("addNewUserInfo", res.data.data.user_info);
               if (this.pageNo == 1) {
                 this.message_list = [];
+                this.$store.commit("clean_public_message_num");
               }
               this.$nextTick(() => {
                 this.message_list = this.message_list.concat(

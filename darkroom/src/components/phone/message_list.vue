@@ -6,12 +6,19 @@
       @pulling-up="pullingUp"
       :options="scrollOptions"
     >
-      <message-list-item :messageListItem="item" v-for="(item,index) in message_list" :key="index"></message-list-item>
+      <message-list-item
+        :itemIndex="index"
+        :messageListItem="item"
+        v-for="(item,index) in message_record_list"
+        :key="item.order_id"
+        @cleanUnreadNum="cleanUnreadNum"
+      ></message-list-item>
     </cube-scroll>
   </div>
 </template>
 
 <script>
+// import { message_record_key } from "../../store/message/message_module.js";
 export default {
   name: "message_list",
   components: {
@@ -44,8 +51,54 @@ export default {
   created() {
     this.getMessageRecordList();
   },
+  activated() {},
   mounted() {},
+  computed: {
+    message_record_list() {
+      window.console.log(
+        this.$store.state.messageRecord.message_resord_list,
+        "this.$stroe.state.messageRecord.message_resord_list"
+      );
+      return this.$store.state.messageRecord.message_resord_list;
+    }
+  },
+  // watch: {
+  //   message_record: {
+  //     deep: true,
+  //     handler(value) {
+  //       window.console.log(value, "message_record");
+  //     }
+  //   }
+  // },
   methods: {
+    cleanUnreadNum(data) {
+      const vm = this;
+      const order_id = data.order_id,
+        index = data.index;
+
+      let message_item = this.message_list[index],
+        current_index = index;
+
+      if (message_item.order_id === order_id) {
+        // message_item.unread_num = 0;
+        message_item = this.message_list.filter((item, index) => {
+          let result = false;
+          if (item.order_id === order_id) {
+            current_index = index;
+            return true;
+          }
+          return result;
+        })[0];
+      }
+      message_item.unread_num = 0;
+      this.$set(vm.message_list, current_index, message_item);
+      window.console.log(
+        "..............",
+        this.message_list[current_index],
+        current_index,
+        message_item
+      );
+    },
     pullingUp() {
       this.pageNo = this.pageNo + 1;
       //   this.pageSize = 30;
@@ -72,7 +125,9 @@ export default {
             // this.$nextTick(() => {
             // })
             this.$nextTick(() => {
-              this.message_list = this.message_list.concat(list);
+              // this.message_list = this.message_list.concat(list);
+              this.$store.commit("messageRecordInit", list);
+              // window.$app.message_record = list;
               this.$store.commit("addNewUserInfo", user_info);
               this.$nextTick(() => {
                 if (list.length > 0) {

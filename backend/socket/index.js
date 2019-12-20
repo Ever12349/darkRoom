@@ -8,7 +8,9 @@ const socketIo = require('socket.io')
 // } from '../util/redis_operation.js'
 
 
-import { saveSocketInfo, clearSocketId } from './socket_global.js'
+import { saveSocketInfo, clearSocketId, userOnline, getUserCodeBySocketId } from './socket_global.js'
+
+import { reduceUserOnlineNum, setUserOnlineNum } from '../controller/user/user_online.js'
 // import SocketInfoModel from '../orm/mongodb/socket_info_model.js'
 
 
@@ -101,8 +103,13 @@ module.exports = function (server) {
         console.log('2222222222')
     })
     global.socket_server = io;
-    io.on('connection', client => {
+    io.on('connection', async client => {
         console.log('connection', client.id)
+        // let user_code = await getUserCodeBySocketId(client.id)
+        await setUserOnlineNum();
+
+        userOnline(client.id).then();
+
 
 
         client.on('save_socket_id', data => {
@@ -112,7 +119,8 @@ module.exports = function (server) {
         })
         client.on('disconnect', async data => {
             console.log(data, 'disconnect', client.id)
-
+            await reduceUserOnlineNum();
+            // userOnline(client.id).then();
             //清空socket_id;
             try {
                 let user_code = await clearSocketId(client.id);

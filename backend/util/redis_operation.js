@@ -26,6 +26,53 @@ export function redisHashSet(hashkey, key, value, callback) {
     })
 }
 
+export function redisHashExists(hsahkey, field) {
+    return new Promise(async (resolve, reject) => {
+        // console.log(hsahkey, field, 'hsahkey, field')
+        // redisHkeys(hsahkey).then(res => {
+        //     console.log(res, 'redisHashExists')
+        //     resolve(res)
+        // })
+        redisClient.hexists(hsahkey, field, (err, res) => {
+            console.log(res, 'redisHashExists')
+            resolve(!!res)
+        })
+    })
+}
+
+export function redisHsahIncr(key, field, value = 1) {
+    return new Promise(async (resolve, reject) => {
+        //判断是否存在
+        const is_exists = await redisHashExists(key, `${field}`);
+        console.log(is_exists, key, field, 'is_existsis_exists')
+        if (is_exists) {
+            redisClient.HINCRBY(key, field, value, (err) => {
+                resolve(!err)
+            })
+        } else {
+            redisHashSet(key, field, 1, (err) => {
+                resolve(!err)
+            })
+        }
+    })
+}
+
+export function redisHdel(key, field) {
+    return new Promise(async (resolve, reject) => {
+        redisClient.hdel(key, field, (err) => {
+            resolve(!err)
+        })
+    })
+}
+
+export function redisHmget(key, filed_list) {
+    return new Promise(async (resolve, reject) => {
+        redisClient.hmget(key, ...filed_list, (err, res) => {
+            resolve(res)
+        })
+    })
+}
+
 
 export function redisGet(key) {
     return new Promise((resolve, reject) => {
@@ -52,12 +99,12 @@ export function redisSetEx(key, value, times, callback) {
     })
 }
 
-export function redisIncr(key) {//某个项目的值+1
+export function redisIncr(key, value = 1) {//某个项目的值+1
     redisClient.exists(key, function (err, res) {
         if (res) {
-            redisClient.incr(key)
+            redisClient.INCRBY(key, value)
         } else {
-            redisClient.set(key, 1)
+            redisClient.set(key, value)
         }
     })
 }
@@ -146,20 +193,20 @@ export function redisDelKey(key) {
     })
 }
 
-export function redisHkeys(key){
-    return new Promise((resolve,reject)=>{
-        if(isString(key)){
-            redisClient.hkeys(key,(err,res)=>{
-                if(err){
+export function redisHkeys(key) {
+    return new Promise((resolve, reject) => {
+        if (isString(key)) {
+            redisClient.hkeys(key, (err, res) => {
+                if (err) {
                     reject('查询错误')
-                }else{
+                } else {
                     resolve(res)
                 }
             })
-        }else{
+        } else {
             reject('参数错误')
         }
-        
+
     })
 }
 

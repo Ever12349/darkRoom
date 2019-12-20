@@ -31,13 +31,16 @@ export default io = socket_io;
 // }
 
 import {
-    redisGet, redisSetEx, redisDelKey
+    redisGet, redisSetEx, redisDelKey, redisHsahIncr
 } from '../util/redis_operation.js'
 
 // let socket_client = socket_io;
 
 // import SocketInfoModel from '../orm/mongodb/socket_info_model.js'
 
+import {
+    getOnlineUserNum
+} from '../controller/user/user_online.js'
 
 
 export function saveSocketInfo(user_code, socket_id) {//保存socket_id并且增加在线人数
@@ -101,8 +104,8 @@ export function sendMessageBySocket(to_user_code, message_obj) {
         //获取socket_id;
 
         const to_socket_id = await getSocketId(to_user_code);
-
-        if (to_socket_id) {
+        console.log(!!to_socket_id, 'to_socket_id')
+        if (!!to_socket_id) {
             try {
                 socketClientBySocketId(to_socket_id).emit('send_message', message_obj, (res) => {
                     console.log(res, 'sockeeeeeee')
@@ -114,8 +117,41 @@ export function sendMessageBySocket(to_user_code, message_obj) {
                 console.log(error)
                 resolve(false)
             }
+        } else {//表示用户不在线
+            //未读消息增加1
+
+            // const redis_key = `unread_num!${to_user_code}!unread_num`,
+            //     user_code = parseInt(message_obj.user_code) == parseInt(to_user_code) ? message_obj.to_user_code : message_obj.user_code;
+            // const field = `${user_code}`
+
+            // let ress = await redisHsahIncr(redis_key, field)
+            // console.log(ress, 'sssssssssssss==========')
+            resolve(false)
+        }
+
+        const redis_key = `unread_num!${to_user_code}!unread_num`,
+            user_code = parseInt(message_obj.user_code) == parseInt(to_user_code) ? message_obj.to_user_code : message_obj.user_code;
+        const field = `${user_code}`
+
+        let ress = await redisHsahIncr(redis_key, field)
+        console.log(ress, 'sssssssssssss==========')
+
+    })
+}
+
+export function sendPublicMessageBySocket(user_code) {//群发公共聊天室
+    return new Promise(async (resolve, reject) => {
+        const socket_id = await getSocketId(user_code);
+        if (socket_id) {
+            try {
+                socketClientBySocketId(socket_id).broadcast.emit('publish_public_message', 1)
+                resolve(true)
+            } catch (error) {
+                resolve(false)
+            }
+
         } else {
-            reject(false)
+            resolve(true)
         }
     })
 }
@@ -134,6 +170,25 @@ export function getUserCodeBySocketId(socket_id) {
     })
 }
 
+export function userOnline(socket_id) {
+    return new Promise(async (resolve, reject) => {
+        const my_socket_id = socket_id;
+        if (socket_id) {
+            try {
+
+                let num = await getOnlineUserNum(); console.log(num, 'userOnlineuserOnline')
+                socketClientBySocketId(my_socket_id).broadcast.emit('user_online_num', num)
+                resolve(true)
+            } catch (error) {
+                console.log(error)
+                resolve(false)
+            }
+        } else {
+            resolve(false)
+        }
+    })
+}
+
 
 export function clearSocketId(socket_id) {
     return new Promise(async (resolve, reject) => {
@@ -146,7 +201,7 @@ export function clearSocketId(socket_id) {
             await SocketInfoModel.updateOne({
                 socket_id,
             }, {
-                socket_id: null
+                socket_id: ''
             })
 
 

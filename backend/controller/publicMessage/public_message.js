@@ -20,6 +20,10 @@ import {
     redislrangeAll,
 } from '../../util/redis_operation.js'
 
+import {
+    sendPublicMessageBySocket
+} from '../../socket/socket_global.js'
+
 
 import moment from 'moment'
 
@@ -67,7 +71,7 @@ export async function sendPublicMessage(ctx, next) {
         }
         //后续socket操作
 
-
+        sendPublicMessageBySocket(user_code).then()
 
     } catch (e) {
         console.log(e)

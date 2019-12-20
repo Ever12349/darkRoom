@@ -102,6 +102,12 @@ export default {
     chattingItem: () => import("@/components/phone/chatting_item.vue"),
     chattingInputBox: () => import("@/components/phone/chatting_input_box.vue")
   },
+  created() {
+    this.cleanMessageUnreadNum();
+  },
+  beforeDestroy() {
+    this.cleanMessageUnreadNum();
+  },
   mounted() {
     this.init(this.userCode);
   },
@@ -119,6 +125,7 @@ export default {
       return this.message || MESSAGE_PLACEHOLDER;
     }
   },
+
   watch: {
     message_data: {
       deep: true,
@@ -173,6 +180,15 @@ export default {
       //   .then(res => {
       //     window.console.log(res);
       //   });
+    },
+    cleanMessageUnreadNum() {
+      this.$myapi
+        .cleanMessageUnreadNum({
+          user_code: localStorage.user_code,
+          to_user_code: this.userCode
+        })
+        .then();
+      this.$store.commit("messageRecordUnreadNumClean", this.userCode);
     },
     onPullingDown() {
       const all_list = window.$app.message_list[this.userCode];
@@ -316,6 +332,8 @@ export default {
         this.message_list.push(message_item);
         this.$nextTick(() => {
           this.scrollToBottom();
+          // this.forceUpdate("scroll");
+          this.hiddenInputBox();
           let message_list_index = this.message_list.length - 1;
           this.$myapi.sendMessage(message_item).then(res => {
             window.console.log("sendMessage", res.data);
@@ -324,7 +342,7 @@ export default {
               this.$set(this.message_list, message_list_index, res.data.data);
               addNewMessage({
                 user_code: this.userCode,
-                list: [res.data.data]
+                message_list: [res.data.data]
               });
               let temp = localStorage[`message!${this.userCode}!message`];
               localStorage[`message!${this.userCode}!message`] = JSON.stringify(
@@ -365,6 +383,9 @@ export default {
           if (child_height > 0) {
             if (child_height > parent_height) {
               scrollDom.scrollTo(0, parent_height - child_height, 0, 0);
+              this.$nextTick(() => {
+                this.forceUpdate("scroll");
+              });
             }
           } else if (this.message_list.length > 0) {
             setTimeout(this.scrollToBottom, 100);
@@ -384,6 +405,9 @@ export default {
   width: 100vw;
   height: 92vh;
   background-color: #f5f5f5;
+  /* position: absolute;
+  bottom: 0;
+  left: 0; */
 }
 .chatting_area {
   width: 100%;

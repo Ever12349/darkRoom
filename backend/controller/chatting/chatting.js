@@ -8,8 +8,10 @@ import {
 } from '../../util/index.js'
 
 import {
-    redisSet, redisGet
+    redisSet, redisGet, redisHdel
 } from '../../util/redis_operation.js'
+
+import redisKeyObj from '../../util/redis_key.js'
 // import moment from 'moment';
 
 import { setRecordByUserCode } from '../friends/uitl'
@@ -26,6 +28,10 @@ import {
 import {
     isArray
 } from '../../socket/index.js'
+
+import {
+    getMessageRecordUnreadNum
+} from './util.js'
 
 import MessageInfoModel from '../../orm/mongodb/message_info_model.js'
 
@@ -57,12 +63,17 @@ export async function getMessageList(ctx, next) {
         }
 
         let user_code_list = new Set();
+        let unread_num_obj = await getMessageRecordUnreadNum(user_code)
 
         result_list.forEach((item) => {
             user_code_list.add(item.user_code);
             user_code_list.add(item.to_user_code);
-        })
 
+            const item_user_code = parseInt(user_code) === parseInt(item.user_code) ? item.to_user_code : item.user_code;
+            item.unread_num = unread_num_obj[item_user_code] || 0;
+        })
+        // let unread_num_obj = await getMessageRecordUnreadNum(user_code)
+        console.log(unread_num_obj)
         let user_info = await getUserInfo([...user_code_list])
         ctx.body = {
             code: 200,
@@ -151,6 +162,31 @@ export async function getMessageListToSomeOne(ctx, next) {
         }
     } catch (error) {
         console.log(error);
+        ctx.body = {
+            code: 500,
+            msg: 'error'
+        }
+    }
+}
+
+export async function cleanMessageUnreadUnm(ctx, next) {
+    try {
+        const reqData = ctx.request.body,
+            user_code = reqData.user_code,
+            to_user_code = reqData.to_user_code;
+        console.log(reqData.data)
+
+        const redis_key = redisKeyObj.unread_num(user_code),
+            fields = `${to_user_code}`;
+
+        await redisHdel(redis_key, fields)
+
+        ctx.body = {
+            code: 200, msg: 'success'
+        }
+
+    } catch (error) {
+        console.log(error)
         ctx.body = {
             code: 500,
             msg: 'error'

@@ -7,12 +7,15 @@ import store from './store'
 import api from './api'
 import './mint-ui'
 import Vtap from 'v-tap'
+import ebus from './api/bus'
 
 Vue.config.productionTip = false
 
 
+Vue.prototype.$ebus = ebus;
+
 import mixinObj from './mixin'
-Vue.mixin( mixinObj)
+Vue.mixin(mixinObj)
 
 Vue.use(api)
 Vue.use(Vtap)

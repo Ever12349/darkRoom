@@ -4,6 +4,7 @@
     <div class="my_header">
       <div class="my_header_item">
         {{ user_name }}
+        <div class='item_layer'>ID: {{ user_code }}</div>
         <div class="item_layer login_in_item" v-show="!is_login">（未登录）</div>
         <div class="item_layer" v-show="is_login">（已登录）</div>
       </div>
@@ -53,6 +54,7 @@ export default {
   },
   data() {
     return {
+      user_code: localStorage.user_code,
       user_name: localStorage.user_name,
       is_login: !!parseInt(localStorage.user_status),
       show_login_in_div_flag: false,
@@ -136,7 +138,7 @@ export default {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-around;
   align-items: center;
   font-size: 8vw;
 }
