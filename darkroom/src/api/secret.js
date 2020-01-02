@@ -1,4 +1,5 @@
-const CryptoJS = require('crypto-js');  //引用AES源码js
+// const CryptoJS = require('crypto-js');  //引用AES源码js
+import CryptoJS from 'crypto-js'
 import NodeRsa from 'node-rsa'
 import {
     isNumber
@@ -28,20 +29,27 @@ const nodeRsaKey = new NodeRsa(private_key, 'pkcs8-private')
 const nodeRsaPubKey = new NodeRsa(public_key, 'pkcs8-public')
 //加密方法
 export function Encrypt(word) {
-    // const nodeRsaKey = new NodeRsa(private_key, 'pkcs8-private')
-    const key_string = randomString(), iv_string = randomString();
-    const key = CryptoJS.enc.Utf8.parse(key_string),
-        iv = CryptoJS.enc.Utf8.parse(iv_string);
-    let srcs = CryptoJS.enc.Utf8.parse(word);
-    //加密数据
-    let encrypted = CryptoJS.AES.encrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-    //加密密钥与密钥偏移量
-    const encrypt_key = nodeRsaKey.encryptPrivate(JSON.stringify({ key: key_string, iv: iv_string }), 'base64', 'utf8');
-    return {
-        encrypted_data: encrypted.ciphertext.toString().toUpperCase(),
-        encrypt_key,
+    try {
+        const key_string = randomString(), iv_string = randomString();
+        const key = CryptoJS.enc.Utf8.parse(key_string),
+            iv = CryptoJS.enc.Utf8.parse(iv_string);
+        window.console.log(key, iv)
+        let srcs = CryptoJS.enc.Utf8.parse(word);
+        //加密数据
+        let encrypted = CryptoJS.AES.encrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+        //加密密钥与密钥偏移量
+        const encrypt_key = nodeRsaKey.encryptPrivate(JSON.stringify({ key: key_string, iv: iv_string }), 'base64', 'utf8');
+        return {
+            encrypted_data: encrypted.ciphertext.toString().toUpperCase(),
+            encrypt_key,
+        }
+
+    } catch (error) {
+        window.console.log(error)
     }
+    // const nodeRsaKey = new NodeRsa(private_key, 'pkcs8-private')
 }
+
 
 export function Decrypt(encrypt_data, encrypt_key) {//数据解密
     try {

@@ -18,11 +18,17 @@
   <script type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
   <% } %>
 
+
+  <% if(htmlWebpackPlugin.options.is_prod ){%>
   <script>
+    window.console.log = function () { return false }
+  </script>
+  <% } %>
+  <!-- <script>
     window.console.log = function () { return false }
 
 
-  </script>
+  </script> -->
   <title>darkroom</title>
   <style>
     /**********

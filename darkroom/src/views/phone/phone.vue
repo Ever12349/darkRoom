@@ -101,7 +101,10 @@ export default {
       return num;
     },
     public_message_unread_num() {
-      window.console.log(this.$store.state.public_message.public_message_num,'this.$store.statethis.$store.statethis.$store.state')
+      window.console.log(
+        this.$store.state.public_message.public_message_num,
+        "this.$store.statethis.$store.statethis.$store.state"
+      );
       let num = this.$store.state.public_message.public_message_num;
 
       return num;

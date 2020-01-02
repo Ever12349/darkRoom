@@ -29,6 +29,7 @@
 
 <script>
 import moment from "moment";
+moment.locale("zh-cn");
 export default {
   name: "chatting_item",
   props: {

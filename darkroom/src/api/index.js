@@ -14,6 +14,13 @@ import {
 
 import public_key from '@/pem/secret_key.js'
 
+import { Encrypt } from './secret.js'
+
+export const encrypt = Encrypt;
+
+// export function encrypt(){
+//     return Encrypt
+// }
 // const public_key = require('@/pem/secret_key.js')
 
 window.console.log(public_key, 'public_key')

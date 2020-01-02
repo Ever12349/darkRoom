@@ -4,8 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "vue-cli-service build --report",
+    "target": "vue-cli-service build --target app --name app",
+    "help": "vue-cli-service build --help",
+    "lint": "vue-cli-service lint",
+    "inspect": "vue-cli-service inspect > outinput.js",
+    "pub": "vue-cli-service inspect --plugins",
+    "ui": "vue-cli-service ui"
   },
   "dependencies": {
     "@babel/polyfill": "^7.7.0",
@@ -23,8 +28,10 @@
     "moment": "^2.24.0",
     "node-rsa": "^1.0.7",
     "register-service-worker": "^1.6.2",
+    "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
+    "uws": "^100.0.1",
     "v-tap": "^3.0.3",
     "vue": "^2.6.11",
     "vue-router": "^3.1.3",
@@ -58,7 +65,6 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
     }
@@ -87,5 +93,7 @@
         ]
       }
     }
-  }
+  },
+  "main": "index.js",
+  "license": "MIT"
 }

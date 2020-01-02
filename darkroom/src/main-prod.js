@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import './cube-ui-dev'
+import './cube-ui-prod'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'

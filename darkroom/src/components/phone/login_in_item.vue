@@ -15,8 +15,12 @@
 <script>
 const state_word = ["error", "success", "warning", null];
 const xss = require("xss");
-import { Encrypt } from "@/api/secret.js";
-import { setAjaxToken } from "@/api";
+// import { Encrypt } from "@/api/secret.js";
+
+// import { Encrypt } from "../../api/secret.js";
+
+import { setAjaxToken, encrypt } from "@/api";
+
 export default {
   name: "login_in_item",
   components: {
@@ -81,7 +85,7 @@ export default {
         this.captcha_state == state_word[1]
       ) {
         const user_id = xss(this.user_name),
-          password = Encrypt(this.password);
+          password = encrypt(this.password);
 
         this.$myapi
           .userLogin({
@@ -104,6 +108,8 @@ export default {
               setAjaxToken(reqData.token);
               this.$myapi.reConnectionSocket();
               this.$emit("success");
+            } else if (res.data.code == 500 && res.data.msg == "no valivate") {
+              window.$phoneApp.showToast("用户名或者密码错误");
             }
           });
       } else {

@@ -4,7 +4,7 @@
     <div class="my_header">
       <div class="my_header_item">
         {{ user_name }}
-        <div class='item_layer'>ID: {{ user_code }}</div>
+        <div class="item_layer">ID: {{ user_code }}</div>
         <div class="item_layer login_in_item" v-show="!is_login">（未登录）</div>
         <div class="item_layer" v-show="is_login">（已登录）</div>
       </div>
@@ -75,6 +75,7 @@ export default {
     renderData() {
       this.user_name = localStorage.user_name;
       this.is_login = !!parseInt(localStorage.user_status);
+      this.user_code = localStorage.user_code;
     },
     showSigninDiv() {
       this.show_sign_in_div_flag = true;
