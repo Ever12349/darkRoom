@@ -1,13 +1,28 @@
 <template>
-  <div class='bg'>
-    <mt-header :title='tittle_message'></mt-header>
+  <div class="bg">
+    <mt-header :title="`大厅(在线人数：${user_online_num})`"></mt-header>
     <div class="scroll-list-wrap">
-      <cube-scroll ref="scroll" :options="options" @pulling-down='pullingDown' @pulling-up='pullingUp'>
-        <message-item @response='response' :key='index' :messageData='item' v-for='(item,index) in message_list'></message-item>
+      <cube-scroll
+        ref="scroll"
+        :options="options"
+        @pulling-down="pullingDown"
+        @pulling-up="pullingUp"
+      >
+        <message-item
+          @response="response"
+          :key="index"
+          :messageData="item"
+          v-for="(item,index) in message_list"
+        ></message-item>
       </cube-scroll>
     </div>
-    <mt-button size="small" @click='showInput' class='transmit_message' type="primary">发送信息</mt-button>
-    <message-input-box :orderId='response_order_id' v-if='show_input_box_flag' @hidden='hiddenInput' @sendMessage='sendMessage'></message-input-box>
+    <mt-button size="small" @click="showInput" class="transmit_message" type="primary">发送信息</mt-button>
+    <message-input-box
+      :orderId="response_order_id"
+      v-if="show_input_box_flag"
+      @hidden="hiddenInput"
+      @sendMessage="sendMessage"
+    ></message-input-box>
   </div>
 </template>
 
@@ -19,7 +34,7 @@ export default {
       response_order_id: null, //回复别人是的id
       message_list: [],
       show_input_box_flag: false,
-      tittle_message: `大厅(在线人数:100)`,
+      // tittle_message: `大厅(在线人数:100)`,
       options: Object.freeze({
         bounce: {
           bottom: true
@@ -47,6 +62,21 @@ export default {
   created() {
     this.getMessageList();
   },
+  computed: {
+    user_online_num() {
+      window.console.log(
+        this.$store.state,
+        "this.$store.statethis.$store.state"
+      );
+      return this.$store.state.user_info.total_user_online_num;
+      // return 99
+    }
+  },
+  activated() {
+    // this.$refs.scroll.forceUpdate({
+    //   dirty: true
+    // });
+  },
   methods: {
     pullingDown() {
       window.console.log("pullingDown");
@@ -57,7 +87,7 @@ export default {
       this.pageNo++;
       this.getMessageList();
     },
-    response(order_id){
+    response(order_id) {
       this.response_order_id = order_id;
       this.show_input_box_flag = true;
     },
@@ -79,6 +109,7 @@ export default {
               this.$store.commit("addNewUserInfo", res.data.data.user_info);
               if (this.pageNo == 1) {
                 this.message_list = [];
+                this.$store.commit("clean_public_message_num");
               }
               this.$nextTick(() => {
                 this.message_list = this.message_list.concat(

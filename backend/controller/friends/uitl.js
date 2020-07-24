@@ -10,7 +10,8 @@ import {
     redisSet,
     redisGet,
     redisLpush,
-    redislrangeAll
+    redislrangeAll,
+    redisIncr
 } from '../../util/redis_operation'
 
 import {
@@ -54,7 +55,14 @@ export function setRecordByUserCode(user_code, to_user_code, message, type_flag 
         const model = new MessageInfoModel(record)
         model.save();
         console.log(model, 'model++++++++++++++++')
-        
+
+        //用户未读消息增加一条
+
+
+        // const key_of_unread = `unread_message_num!${to_user_code}!unread_message_num`;
+        // redisIncr(key_of_unread)
+        // redisSet()
+
         // } else {
         //     reject('参数错误')
         // }
@@ -135,7 +143,8 @@ export function getFriendsListByUserCode(user_code) {
                     user_code: user_code
                 }, {
                     to_user_code: user_code
-                }]
+                }],
+                data_status: 1
             }).sort({
                 create_time: -1
             })

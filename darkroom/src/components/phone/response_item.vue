@@ -1,54 +1,43 @@
 <template>
-  <div class='response_item_bg'>
-    <div @click='showAllMessage' class='show_all_message' v-if='show_all_message_flag'>
-      点击展开全部信息
-    </div>
+  <div class="response_item_bg">
+    <div @click="showAllMessage" class="show_all_message" v-if="show_all_message_flag">点击展开全部信息</div>
 
-    <div v-else class='response_item_container'>
-      <div class='response_item_header'>
-        <div>
-          {{ user_name }}
-        </div>
-        <i v-show='to_user_code' class='cubeic-arrow'></i>
-        <div v-show='to_user_code'>
-          {{ to_user_name }}
-        </div>
-        <div class='placeholder'></div>
-        <div class='response_botton' @click='response'>
-          回复
-        </div>
+    <div v-else class="response_item_container">
+      <div class="response_item_header">
+        <div>{{ user_name }}</div>
+        <i v-show="to_user_code" class="cubeic-arrow"></i>
+        <div v-show="to_user_code">{{ to_user_name }}</div>
+        <div class="placeholder"></div>
+        <div class="response_botton" @click="response">回复</div>
       </div>
-      <div class='response_item_body'>
-        {{ content }}
-      </div>
-      <div class='response_item_footer'>
-        <div class='response_item_time'>
-          {{ time }}
-        </div>
-        <div v-if='!show_more_flag' class='check-response' @click='showMore'>
-          <i class='cubeic-pulldown'></i>
+      <div class="response_item_body">{{ content }}</div>
+      <div class="response_item_footer">
+        <div class="response_item_time">{{ time }}</div>
+        <div v-if="!show_more_flag" class="check-response" @click="showMore">
+          <i class="cubeic-pulldown"></i>
           <span>查看回复</span>
         </div>
-        <div v-else class='check-response' @click='hiddenMore'>
-          <i class='cubeic-pullup'></i>
+        <div v-else class="check-response" @click="hiddenMore">
+          <i class="cubeic-pullup"></i>
           <span>收起回复</span>
         </div>
       </div>
-      <div v-if='show_more_flag'>
-        <mt-spinner v-show='show_spinner_flag' type="triple-bounce" color='#524aa3' :size=20></mt-spinner>
-        <response-item @showAllMessage='getAllMessage' @childReply='response' :responseData='item' :key='index' v-for='(item,index) in response_list'></response-item>
+      <div v-if="show_more_flag">
+        <mt-spinner v-show="show_spinner_flag" type="triple-bounce" color="#524aa3" :size="20"></mt-spinner>
+        <response-item
+          @showAllMessage="getAllMessage"
+          @childReply="response"
+          :responseData="item"
+          :key="index"
+          v-for="(item,index) in response_list"
+        ></response-item>
         <!-- <div v-if='get_more_flag' class='get_more'>
           点击加载更多
-        </div> -->
-        <div v-show='get_more_flag' class='get_more'>
-          没有更多
-        </div>
-
+        </div>-->
+        <div v-show="get_more_flag" class="get_more">没有更多</div>
       </div>
     </div>
-    <div>
-
-    </div>
+    <div></div>
   </div>
 </template>
 
@@ -140,7 +129,11 @@ export default {
             if (res.data.code == 200) {
               this.$store.commit("addNewUserInfo", res.data.data.user_info);
               const list = res.data.data.list;
-              this.response_list.splice(3,1,...list.slice(3,list.length-2));
+              this.response_list.splice(
+                3,
+                1,
+                ...list.slice(3, list.length - 2)
+              );
               // this.response_list = this.response_list.concat(
               //   res.data.data.list
               // );
@@ -166,10 +159,9 @@ export default {
               this.$store.commit("addNewUserInfo", res.data.data.user_info);
               // this.$store.commit("addNewUserInfo", res.data.data.user_info);
               const list = res.data.data.list;
-              this.response_list = this.response_list.concat(list)
+              this.response_list = this.response_list.concat(list);
               // this.response_list.splice(3,1,...list.slice(3,list.length-2));
               if (!list.length) {
-                
                 this.get_more_flag = true;
               }
               // if (res.data.data.list.length >= response_list_page_size) {
@@ -190,7 +182,7 @@ export default {
 
 <style scoped>
 .response_item_bg {
-  background-color: #09fffa47;
+  background-color: rgba(9, 255, 210, 0.3);
   width: 96vw;
   border-top: 1px solid #ccc;
   /* border-radius: 2vw; */

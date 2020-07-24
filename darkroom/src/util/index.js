@@ -15,7 +15,7 @@ export function isPc() {
         return flag;
 }
 
-export function autoTextarea(elem, extra, maxHeight) {
+export function autoTextarea(elem, extra, maxHeight, callback) {
         extra = extra || 0;
         var isFirefox = !!document.getBoxObjectFor || 'mozInnerScreenX' in window,
                 isOpera = !!window.opera && !!window.opera.toString().indexOf('Opera'),
@@ -69,6 +69,8 @@ export function autoTextarea(elem, extra, maxHeight) {
                         document.body.scrollTop = scrollTop;
                         document.documentElement.scrollTop = scrollTop;
                         elem.currHeight = parseInt(style.height);
+
+                        callback && callback(style.height)
                 }
         };
 
@@ -77,4 +79,11 @@ export function autoTextarea(elem, extra, maxHeight) {
         addEvent('focus', change);
         change();
 }
+
+
+export function getMessageListKey(user_code) {
+        const key = `message_list!${user_code}`;
+        return key
+}
+
 

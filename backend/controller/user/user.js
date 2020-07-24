@@ -137,7 +137,8 @@ export async function userLoginin(ctx, next) {
     try {
         const reqData = ctx.request.body,
             user_id = reqData.user_id,
-            en_password = password;
+            en_password = reqData.password;
+        console.log(reqData, 'userLogin')
         let preback
         //检查用户名
 
@@ -145,12 +146,12 @@ export async function userLoginin(ctx, next) {
 
         const password = Decrypt(en_password.encrypted_data, en_password.encrypt_key);
 
-        const valivate_password = encryptCryptoJs(password);//密码再加密
+        const valivate_password = await encryptPassword(password);//密码再加密
         //假设用户输入的是用户名
-
+        console.log(valivate_password, 'tt', password, 'valivate_password')
         const user_info_list = await userInfoModel.find({
             $or: [{
-                user_code: user_id
+                user_code: !!parseInt(user_id) ? parseInt(user_id) : 1
             }, {
                 user_name: user_id
             }],
@@ -171,11 +172,16 @@ export async function userLoginin(ctx, next) {
                     break;
                 }
             }
-            preback = is_passing ? {
-                code: 200,
-                msg: 'success',
-                user_info: new_user_info
-            } : {
+            preback = is_passing ? function () {
+
+
+                return {
+                    code: 200,
+                    msg: 'success',
+                    user_info: new_user_info,
+                    token: getjwtToken(new_user_info.user_code, new_user_info.user_status)
+                }
+            }() : {
                     code: 500,
                     msg: 'no valivate' //用户名或者密码错误
                 }

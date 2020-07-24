@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :style="{'background-color':`${ismine?'#43df17ad':'#d6d8e1a1'}`}" class="bg">
+    <div :style="{'background-color':`${ismine?'rgba(66,255,0,0.6)':'rgba(227,229,239,0.6)'}`}" class="bg">
       <div class="header">
         <div class="user_name_item" @click.stop="applicationFriends(user_code)">{{ user_name }}</div>
         <i v-show="to_user_code" class="cubeic-arrow"></i>

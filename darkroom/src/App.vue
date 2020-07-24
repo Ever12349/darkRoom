@@ -1,34 +1,49 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
-import {isPc} from './util'
+import { isPc } from "./util";
 export default {
-  name:'app',
-  data(){
+  name: "app",
+  data() {
     return {
-      isPC:isPc()
+      message_list: {},
+      message_record: [],
+      // message_detail: {},
+      isPC: isPc()
+    };
+  },
+  created() {
+    window.$app = this;
+  },
+  methods: {
+    addNewMessageItem(user_code, message_list) {
+      window.console.log(user_code, message_list, this.message_record);
+      if (this.message_list[user_code]) {
+        this.message_list[user_code] = [
+          ...this.message_list[user_code],
+          ...message_list
+        ];
+        // this.$set(this.message_list,user_code,[])
+      } else {
+        // this.message_list[user_code] = message_list;
+        this.$set(this.message_list, user_code, message_list);
+      }
     }
-  },
-  created(){
-  },
-  methods:{
-
   }
-}
+};
 </script>
 
 <style>
-
 </style>
 
 
 <style lang="scss">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

@@ -27,7 +27,7 @@ onerror(app)
 
 // middlewares
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
@@ -39,13 +39,13 @@ app.use(views(__dirname + '/views', {
 
 // console.log(process.env)
 
-app.use(cors({origin:process.env.HOST ,credentials:false,allowMethods: ['ALL']}));
+app.use(cors({ origin: process.env.HOST, credentials: false, allowMethods: ['ALL'] }));
 
 
 app.use(jwt({
-  secret:process.env.JWTKEY
+  secret: process.env.JWTKEY
 }).unless({
-  path:[/\/keep_user_online/,/\/test/]
+  path: [/\/keep_user_online/, /\/test/]
 }))
 
 
@@ -67,7 +67,7 @@ app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
-console.log(process.env.MONGODBURL,'appp___________url')
+console.log(process.env.MONGODBURL, 'appp___________url')
 // import './schedule/schedule_task.js'
 
 module.exports = app

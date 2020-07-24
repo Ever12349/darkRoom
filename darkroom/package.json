@@ -4,27 +4,40 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "vue-cli-service build --report",
+    "target": "vue-cli-service build --target app --name app",
+    "help": "vue-cli-service build --help",
+    "lint": "vue-cli-service lint",
+    "inspect": "vue-cli-service inspect > outinput.js",
+    "pub": "vue-cli-service inspect --plugins",
+    "ui": "vue-cli-service ui"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.7.0",
     "animate.css": "^3.7.2",
     "axios": "^0.19.0",
     "babel-preset-es2015": "^6.24.1",
     "captcha-mini": "^1.1.0",
+    "compression-webpack-plugin": "^3.0.1",
     "core-js": "^3.3.2",
     "crypto-js": "^3.1.9-1",
     "cube-ui": "~1.12.15",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "image-webpack-loader": "^6.0.0",
     "mint-ui": "^2.2.13",
     "moment": "^2.24.0",
     "node-rsa": "^1.0.7",
     "register-service-worker": "^1.6.2",
+    "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "uws": "^100.0.1",
     "v-tap": "^3.0.3",
-    "vue": "^2.6.10",
+    "vue": "^2.6.11",
     "vue-router": "^3.1.3",
     "vue2-verify": "^1.1.5",
     "vuex": "^3.0.1",
+    "webpack-spritesmith": "^1.0.2",
     "xss": "^1.0.6"
   },
   "devDependencies": {
@@ -52,7 +65,6 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
     }
@@ -81,5 +93,7 @@
         ]
       }
     }
-  }
+  },
+  "main": "index.js",
+  "license": "MIT"
 }
